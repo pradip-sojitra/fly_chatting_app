@@ -1,23 +1,23 @@
 import 'dart:developer';
 import 'dart:typed_data';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ContactScreen extends StatefulWidget {
   ContactScreen({
     super.key,
-    this.firebaseUser,
-    this.userModel,
+    required this.firebaseUser,
+    required this.userModel,
   });
 
-  User? firebaseUser;
-  UserModel? userModel;
+  User firebaseUser;
+  UserModel userModel;
 
   @override
   State<ContactScreen> createState() => _ContactScreenState();
@@ -65,6 +65,42 @@ class _ContactScreenState extends State<ContactScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<ChatCheckParticipant?> getParticipantChat(UserModel targetUser) async {
+    ChatCheckParticipant? chatCheckData;
+
+    final checkTargetChat = await FirebaseFirestore.instance
+        .collection('chatCheck')
+        .where('participant.${widget.userModel.uid}', isEqualTo: true)
+        .where('participant.${targetUser.uid}', isEqualTo: true)
+        .get();
+
+    if (checkTargetChat.docs.isNotEmpty) {
+      final getChatData = checkTargetChat.docs[0].data();
+      ChatCheckParticipant existsParticipant =
+          ChatCheckParticipant.fromMap(getChatData);
+
+      chatCheckData = existsParticipant;
+      log('chat is exists');
+    } else {
+      ChatCheckParticipant newChatData = ChatCheckParticipant(
+        chatId: targetUser.phoneNumber,
+        lastMessage: '',
+        participant: {
+          widget.userModel.uid.toString(): true,
+          targetUser.uid.toString(): true,
+        },
+      );
+
+      await FirebaseFirestore.instance
+          .collection('chatCheck')
+          .doc(newChatData.chatId)
+          .set(newChatData.toMap());
+
+      chatCheckData = newChatData;
+      log('new chatScreen is created');
+    }
   }
 
   // List<UserModel> firebaseAllContacts = [];
@@ -201,8 +237,11 @@ class _ContactScreenState extends State<ContactScreen> {
                   child: ListView.builder(
                     itemCount: numbers.length,
                     itemBuilder: (context, index) {
-                      if (names[index].toLowerCase().startsWith(isSearching.toLowerCase()) ||
-                          numbers[index].startsWith(isSearching.toLowerCase())) {
+                      if (names[index]
+                              .toLowerCase()
+                              .startsWith(isSearching.toLowerCase()) ||
+                          numbers[index]
+                              .startsWith(isSearching.toLowerCase())) {
                         return contactsAllData(index);
                       }
                       if (searchController.text == '') {
@@ -227,25 +266,33 @@ class _ContactScreenState extends State<ContactScreen> {
             .replaceAll('+91', '')
             .replaceAll('+261', '');
 
-        // final userData = await FirebaseFirestore.instance.collection('users').where('phoneNumber',isEqualTo: number).get();
-        // final dataAll = userData.docs[0].data();
-        // final snapShotData = UserModel.fromJson(dataAll as Map<String, String>);
+        final targetData = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phoneNumber', isEqualTo: number)
+            .get();
+        final dataAll = targetData.docs[0].data();
+        UserModel targetUser = UserModel.fromMap(dataAll);
 
         log('---------------------local-----------------------$number----------------------------------------------------');
+        log('---------------------fireStoreData-----------------------${targetUser.uid.toString()}---------------------------');
 
-        Navigator.of(context).pop();
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              firebaseUser: widget.firebaseUser,
-              userModel: widget.userModel,
-              contactImages: images[index],
-              contactNameFirst: nameFirst[index],
-              contactName: names[index],
-              contactNumbers: number,
-            ),
-          ),
-        );
+        ChatCheckParticipant? chatCheck = await getParticipantChat(targetUser);
+
+        // Navigator.of(context).pop();
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) => ChatScreen(
+        //       firebaseUser: widget.firebaseUser,
+        //       userModel: widget.userModel,
+        //       targetUser: targetUser,
+        //       // chatCheck: ,
+        //       contactImages: images[index],
+        //       contactNameFirst: nameFirst[index],
+        //       contactName: names[index],
+        //       contactNumbers: number,
+        //     ),
+        //   ),
+        // );
       },
       title: Text(names[index]),
       subtitle: Text(numbers[index]),
