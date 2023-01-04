@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -51,6 +52,7 @@ class _ContactScreenState extends State<ContactScreen> {
   Future<void> getAllContacts() async {
     final contactsAll =
         await ContactsService.getContacts(withThumbnails: false);
+
     for (final contact in contactsAll) {
       contact.phones!.toSet().forEach((phone) {
         names.add(contact.displayName!);
@@ -84,8 +86,9 @@ class _ContactScreenState extends State<ContactScreen> {
       chatCheckData = existsParticipant;
       log('chat is exists');
     } else {
+      final String chatId = DateTime.now().microsecondsSinceEpoch.toString();
       ChatCheckParticipant newChatData = ChatCheckParticipant(
-        chatId: targetUser.phoneNumber,
+        chatId: chatId,
         lastMessage: '',
         participant: {
           widget.userModel.uid.toString(): true,
@@ -101,6 +104,7 @@ class _ContactScreenState extends State<ContactScreen> {
       chatCheckData = newChatData;
       log('new chatScreen is created');
     }
+    return chatCheckData;
   }
 
   // List<UserModel> firebaseAllContacts = [];
@@ -274,25 +278,28 @@ class _ContactScreenState extends State<ContactScreen> {
         UserModel targetUser = UserModel.fromMap(dataAll);
 
         log('---------------------local-----------------------$number----------------------------------------------------');
-        log('---------------------fireStoreData-----------------------${targetUser.uid.toString()}---------------------------');
+        log('---------------------fireStoreData-----------------------${targetUser.fullName}---------------------------');
 
-        ChatCheckParticipant? chatCheck = await getParticipantChat(targetUser);
+        ChatCheckParticipant? chatCheckParticipant =
+            await getParticipantChat(targetUser);
 
-        // Navigator.of(context).pop();
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(
-        //     builder: (context) => ChatScreen(
-        //       firebaseUser: widget.firebaseUser,
-        //       userModel: widget.userModel,
-        //       targetUser: targetUser,
-        //       // chatCheck: ,
-        //       contactImages: images[index],
-        //       contactNameFirst: nameFirst[index],
-        //       contactName: names[index],
-        //       contactNumbers: number,
-        //     ),
-        //   ),
-        // );
+        if (chatCheckParticipant != null) {
+          Navigator.of(context).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                firebaseUser: widget.firebaseUser,
+                userModel: widget.userModel,
+                targetUser: targetUser,
+                chatCheck: chatCheckParticipant,
+                contactImages: images[index],
+                contactNameFirst: nameFirst[index],
+                contactName: names[index],
+                contactNumbers: number,
+              ),
+            ),
+          );
+        }
       },
       title: Text(names[index]),
       subtitle: Text(numbers[index]),

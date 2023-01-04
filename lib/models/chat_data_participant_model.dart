@@ -1,28 +1,36 @@
 class ChatDataParticipant {
-  ChatDataParticipant(
-      {this.text, this.sender, this.seen, this.createDone, this.messageId});
-
-  ChatDataParticipant.fromJson(Map<String, String> json) {
-    text = json['text'];
-    sender = json['sender'];
-    messageId = json['messageId'];
-    seen = json['seen'] as bool?;
-    createDone = json['createDone'] as DateTime?;
-  }
-
   String? text;
   String? messageId;
   String? sender;
   bool? seen;
   DateTime? createDone;
+  String? time;
 
-  Map<String, dynamic> toJson() {
+  ChatDataParticipant(
+      {this.text,
+      this.sender,
+      this.seen,
+      this.createDone,
+      this.messageId,
+      this.time});
+
+  ChatDataParticipant.fromMap(Map<String, String> data) {
+    text = data['text'];
+    sender = data['sender'];
+    messageId = data['messageId'];
+    seen = data['seen'] as bool?;
+    createDone = data['createDone'] as DateTime?;
+    time = data['time'];
+  }
+
+  Map<String, dynamic> toMap() {
     return {
       'text': text,
       'messageId': messageId,
       'sender': sender,
       'seen': seen,
       'createDone': createDone,
+      'time': time,
     };
   }
 }

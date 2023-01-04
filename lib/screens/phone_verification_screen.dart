@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
@@ -122,27 +123,49 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
       final User? user = FirebaseAuth.instance.currentUser;
       final String uid = user!.uid;
 
-      UserModel newUserCreate = UserModel(
-          fullName: '',
-          profilePicture: '',
-          uid: uid,
-          phoneNumber: widget.number,
-          about: '');
-
-      await FirebaseFirestore.instance
+      final checkUserData = await FirebaseFirestore.instance
           .collection('users')
-          .doc(uid)
-          .set(newUserCreate.toMap())
-          .then((value) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) =>
-                ProfileScreen(firebaseUser: user, userModel: newUserCreate),
-          ),
-          (route) => false,
-        );
-        log('new user created');
-      });
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      if (checkUserData.docs.isNotEmpty) {
+        final getUserdata = checkUserData.docs[0].data();
+        UserModel userModel = UserModel.fromMap(getUserdata);
+
+        log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
+
+        if (userModel != null) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(firebaseUser: user, userModel: userModel),
+            ),
+            (route) => false,
+          );
+        }
+      } else {
+        UserModel newUserCreate = UserModel(
+            fullName: '',
+            profilePicture: '',
+            uid: uid,
+            phoneNumber: widget.number,
+            about: '');
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set(newUserCreate.toMap())
+            .then((value) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) =>
+                  ProfileScreen(firebaseUser: user, userModel: newUserCreate),
+            ),
+            (route) => false,
+          );
+          log('new user created');
+        });
+      }
     }
   }
 

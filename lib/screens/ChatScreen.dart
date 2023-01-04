@@ -1,11 +1,15 @@
 import 'dart:developer';
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/models/chat_data_participant_model.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:fly_chatting_app/widgets/theme/messenger_scaffold.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
@@ -34,7 +38,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController chatController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +84,53 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          Expanded(child: Container()),
+          Expanded(
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('chatCheck')
+                  .doc(widget.chatCheck.chatId)
+                  .collection('messages')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  if (snapshot.hasData) {
+
+                    // Map chatData = snapshot.data!.docs[0].data();
+
+
+
+
+
+
+
+
+
+
+
+
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                      child: Text('Something went wrong! Please check your internet connection.'),
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('Say hii to your new friend'),
+                    );
+                  }
+                }
+                return Container();
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(6),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: const EdgeInsets.all(1),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(50),
@@ -100,7 +144,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     Expanded(
                       child: TextFormField(
                         minLines: 1,
-                        controller: chatController,
+                        maxLines: 3,
+                        controller: messageController,
                         decoration: InputDecoration(
                           hintText: 'Message',
                           contentPadding: const EdgeInsets.only(
@@ -121,7 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     CupertinoButton(
                       padding: const EdgeInsets.all(0),
                       onPressed: () async {
-                        log('--------------local-------------------${widget.contactNumbers}-----------------------------------------');
+                        sendMessages();
                       },
                       child: CircleAvatar(
                         backgroundColor: lightBlueColor,
@@ -144,5 +189,30 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> sendMessages() async {
+    final String msg = messageController.text.trim();
+
+    if (msg != '') {
+      final String messageId = DateTime.now().microsecondsSinceEpoch.toString();
+      ChatDataParticipant newMessage = ChatDataParticipant(
+        text: msg,
+        sender: widget.userModel.uid,
+        seen: false,
+        time: DateFormat('hh:mm a').format(DateTime.now()).toString(),
+        createDone: DateTime.now(),
+        messageId: messageId,
+      );
+
+      FirebaseFirestore.instance
+          .collection('chatCheck')
+          .doc(widget.chatCheck.chatId)
+          .collection('messages')
+          .doc(newMessage.messageId)
+          .set(newMessage.toMap());
+      log('---------------------------------------------------- message sent ----------------------------------------------------------');
+    }
+    messageController.clear();
   }
 }
