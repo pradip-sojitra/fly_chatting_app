@@ -3,11 +3,11 @@ import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 
 class BuildCupertinoButton extends StatelessWidget {
 
-  BuildCupertinoButton(
+  const BuildCupertinoButton(
       {super.key, required this.onPressed, required this.title, this.style,});
-  void Function()? onPressed;
-  String title;
-  TextStyle? style;
+final  void Function()? onPressed;
+ final String title;
+ final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {

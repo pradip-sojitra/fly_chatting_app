@@ -1,14 +1,16 @@
-class ChatCheckParticipant{
+class ChatCheckModel{
   String? chatId;
   String? lastMessage;
+  String? lastTime;
   Map<String, dynamic>? participant;
 
-  ChatCheckParticipant({this.chatId, this.participant, this.lastMessage});
+  ChatCheckModel({this.chatId, this.participant, this.lastMessage, this.lastTime});
 
-  ChatCheckParticipant.fromMap(Map<String, dynamic> data) {
+  ChatCheckModel.fromMap(Map<String, dynamic> data) {
     chatId = data['chatId'];
     lastMessage = data['lastMessage'];
-    participant = data['participant'] as Map<String, dynamic>?;
+    participant = data['participant'];
+    lastTime = data['lastTime'];
   }
 
   Map<String, dynamic> toMap() {
@@ -16,6 +18,7 @@ class ChatCheckParticipant{
       'lastMessage': lastMessage,
       'chatId': chatId,
       'participant': participant,
+      'lastTime':lastTime,
     };
   }
 }

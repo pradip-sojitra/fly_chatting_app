@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class BuildCupertinoButtonIcon extends StatelessWidget {
 
-  BuildCupertinoButtonIcon(
+  const BuildCupertinoButtonIcon(
       {super.key, required this.onPressed,this.color, this.title, this.icons,});
-  String? title;
-  IconData? icons;
-  Color? color;
-  void Function()? onPressed;
+ final String? title;
+ final IconData? icons;
+ final Color? color;
+ final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {

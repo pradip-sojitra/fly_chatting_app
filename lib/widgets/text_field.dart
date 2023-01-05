@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 
 class BuildTextField extends StatelessWidget {
-  String? hintText;
-  TextInputAction? textInputAction;
-  TextEditingController? controller;
-  BuildTextField({Key? key,this.controller,this.hintText,this.textInputAction}) : super(key: key);
+  const BuildTextField({Key? key,this.controller,this.hintText,this.textInputAction}) : super(key: key);
+
+ final String? hintText;
+ final TextInputAction? textInputAction;
+ final TextEditingController? controller;
+
 
   @override
   Widget build(BuildContext context) {

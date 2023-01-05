@@ -5,6 +5,7 @@ class UserModel {
   String? fullName;
   String? about;
 
+
   UserModel({
     this.phoneNumber,
     this.uid,

@@ -8,7 +8,6 @@ import 'package:fly_chatting_app/models/chat_data_participant_model.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/theme/messenger_scaffold.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -27,7 +26,7 @@ class ChatScreen extends StatefulWidget {
   final User firebaseUser;
   final UserModel userModel;
   final UserModel targetUser;
-  final ChatCheckParticipant chatCheck;
+  final ChatCheckModel chatCheck;
   final String? contactName;
   final String? contactNumbers;
   final Uint8List? contactImages;
@@ -90,6 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   .collection('chatCheck')
                   .doc(widget.chatCheck.chatId)
                   .collection('messages')
+                  .orderBy('messageId', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -98,23 +98,86 @@ class _ChatScreenState extends State<ChatScreen> {
                   );
                 } else {
                   if (snapshot.hasData) {
-
-                    // Map chatData = snapshot.data!.docs[0].data();
-
-
-
-
-
-
-
-
-
-
-
-
+                    return ListView.builder(
+                      reverse: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        ChatDataModel currentMessage = ChatDataModel.fromMap(
+                            snapshot.data!.docs[index].data());
+                        final bool isUserCheck =
+                            currentMessage.sender == widget.userModel.uid;
+                        return Align(
+                          alignment: isUserCheck
+                              ? Alignment.topRight
+                              : Alignment.topLeft,
+                          child: Padding(
+                            padding: isUserCheck
+                                ? const EdgeInsets.only(left: 50)
+                                : const EdgeInsets.only(right: 50),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              splashColor: lightBlueColor,
+                              onLongPress: () {
+                                messageDelete(currentMessage);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: lightFullBlueColor,
+                                    borderRadius: isUserCheck
+                                        ? const BorderRadius.only(
+                                            topLeft: Radius.circular(8),
+                                            topRight: Radius.circular(8),
+                                            bottomLeft: Radius.circular(8))
+                                        : const BorderRadius.only(
+                                            topLeft: Radius.circular(8),
+                                            topRight: Radius.circular(8),
+                                            bottomRight: Radius.circular(8))),
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 3, horizontal: 12),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Wrap(
+                                      alignment: WrapAlignment.end,
+                                      children: [
+                                        Text(
+                                          currentMessage.text.toString(),
+                                          style: const TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 12),
+                                            Text(
+                                              currentMessage.time.toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   } else if (snapshot.hasError) {
                     return const Center(
-                      child: Text('Something went wrong! Please check your internet connection.'),
+                      child: Text(
+                          'Something went wrong! Please check your internet connection.'),
                     );
                   } else {
                     return const Center(
@@ -122,7 +185,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     );
                   }
                 }
-                return Container();
               },
             ),
           ),
@@ -196,12 +258,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (msg != '') {
       final String messageId = DateTime.now().microsecondsSinceEpoch.toString();
-      ChatDataParticipant newMessage = ChatDataParticipant(
+      ChatDataModel newMessage = ChatDataModel(
         text: msg,
         sender: widget.userModel.uid,
-        seen: false,
         time: DateFormat('hh:mm a').format(DateTime.now()).toString(),
-        createDone: DateTime.now(),
         messageId: messageId,
       );
 
@@ -212,7 +272,26 @@ class _ChatScreenState extends State<ChatScreen> {
           .doc(newMessage.messageId)
           .set(newMessage.toMap());
       log('---------------------------------------------------- message sent ----------------------------------------------------------');
+
+      setState(() {
+        widget.chatCheck.lastMessage = msg;
+        widget.chatCheck.lastTime = newMessage.time;
+      });
+
+      FirebaseFirestore.instance
+          .collection('chatCheck')
+          .doc(widget.chatCheck.chatId)
+          .set(widget.chatCheck.toMap());
     }
     messageController.clear();
+  }
+
+  Future<void> messageDelete(ChatDataModel currentMessage) async {
+    await FirebaseFirestore.instance
+        .collection('chatCheck')
+        .doc(widget.chatCheck.chatId)
+        .collection('messages')
+        .doc(currentMessage.messageId)
+        .delete();
   }
 }

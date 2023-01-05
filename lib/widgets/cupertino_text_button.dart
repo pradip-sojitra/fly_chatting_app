@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 
 class BuildCupertinoButtonText extends StatelessWidget {
-  void Function()? onPressed;
-  String title;
-  TextStyle? style;
-
-  BuildCupertinoButtonText(
+ const BuildCupertinoButtonText(
       {Key? key, required this.onPressed, required this.title, this.style})
       : super(key: key);
+
+ final void Function()? onPressed;
+ final String title;
+ final TextStyle? style;
+
+
 
   @override
   Widget build(BuildContext context) {
