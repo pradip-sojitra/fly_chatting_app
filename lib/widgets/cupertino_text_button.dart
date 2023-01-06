@@ -23,7 +23,7 @@ class BuildCupertinoButtonText extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 16,
               letterSpacing: 0.1,
-              color: darkBlueColor,fontFamily: "Varela Round Regular")),
+              color: AppColors.darkBlueColor,fontFamily: "Varela Round Regular")),
     );
   }
 }

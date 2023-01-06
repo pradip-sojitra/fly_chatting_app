@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: lightBlueColor,
+        backgroundColor: AppColors.lightBlueColor,
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(
                       Icons.chat,
                       size: 28,
-                      color: darkBlueColor,
+                      color: AppColors.darkBlueColor,
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -270,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(
                       Icons.call,
                       size: 28,
-                      color: darkBlueColor,
+                      color: AppColors.darkBlueColor,
                     ),
                     onPressed: () {},
                   ),
@@ -279,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(
                       Icons.videocam_rounded,
                       size: 28,
-                      color: darkBlueColor,
+                      color: AppColors.darkBlueColor,
                     ),
                     onPressed: () {},
                   ),
@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(
                       Icons.error_outline,
                       size: 28,
-                      color: darkBlueColor,
+                      color: AppColors.darkBlueColor,
                     ),
                     onPressed: () {},
                   )

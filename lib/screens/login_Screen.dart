@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color:
-                          isCheckValue.isEmpty ? lightBlueColor : darkBlueColor,
+                          isCheckValue.isEmpty ? AppColors.lightBlueColor : AppColors.darkBlueColor,
                       width: 2,
                     ),
                   ),
@@ -121,9 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         value: rememberMe,
-                        activeColor: darkBlueColor,
+                        activeColor: AppColors.darkBlueColor,
                         side:
-                            const BorderSide(color: lightBlueColor, width: 2.5),
+                            const BorderSide(color: AppColors.lightBlueColor, width: 2.5),
                         onChanged: (value) {
                           setState(() {
                             rememberMe = value!;
@@ -227,11 +227,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50),
-            borderSide: const BorderSide(color: darkBlueColor, width: 2),
+            borderSide: const BorderSide(color: AppColors.darkBlueColor, width: 2),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50),
-            borderSide: const BorderSide(color: darkBlueColor, width: 2),
+            borderSide: const BorderSide(color: AppColors.darkBlueColor, width: 2),
           ),
         ),
       ),

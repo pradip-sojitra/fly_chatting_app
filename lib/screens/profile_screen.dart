@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 100,
-                        backgroundColor: lightDimBlueColor,
+                        backgroundColor: AppColors.lightDimBlueColor,
                         backgroundImage: (profilePicture == null)
                             ? null
                             : FileImage(profilePicture!),
@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 45,
                             height: 45,
                             decoration: BoxDecoration(
-                              color: darkBlueColor,
+                              color: AppColors.darkBlueColor,
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: const Icon(

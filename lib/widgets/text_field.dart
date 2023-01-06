@@ -24,7 +24,7 @@ class BuildTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(14)
           ),
           filled: true,
-          fillColor: lightDimBlueColor
+          fillColor: AppColors.lightDimBlueColor
       ),
     );
   }

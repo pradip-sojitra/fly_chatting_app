@@ -16,7 +16,7 @@ final  void Function()? onPressed;
       width: double.infinity,
       child: CupertinoButton(
         onPressed: onPressed,
-        color: darkBlueColor,
+        color: AppColors.darkBlueColor,
         borderRadius: BorderRadius.circular(50),
         child: Text(title,
           style: (style == null)

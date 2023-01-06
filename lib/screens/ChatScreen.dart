@@ -116,13 +116,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                 : const EdgeInsets.only(right: 50),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(8),
-                              splashColor: lightBlueColor,
+                              splashColor: AppColors.lightBlueColor,
                               onLongPress: () {
                                 messageDelete(currentMessage);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                    color: lightFullBlueColor,
+                                    color: AppColors.lightFullBlueColor,
                                     borderRadius: isUserCheck
                                         ? const BorderRadius.only(
                                             topLeft: Radius.circular(8),
@@ -197,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: lightBlueColor,
+                    color: AppColors.lightBlueColor,
                     width: 1.5,
                   ),
                 ),
@@ -231,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         sendMessages();
                       },
                       child: CircleAvatar(
-                        backgroundColor: lightBlueColor,
+                        backgroundColor: AppColors.lightBlueColor,
                         radius: 27,
                         child: Container(
                           padding: const EdgeInsets.only(left: 5),

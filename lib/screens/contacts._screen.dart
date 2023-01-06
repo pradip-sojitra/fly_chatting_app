@@ -129,7 +129,7 @@ class _ContactScreenState extends State<ContactScreen> {
         elevation: 0,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: darkBlueColor))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.darkBlueColor))
           : Column(
               children: [
                 Padding(
@@ -158,7 +158,7 @@ class _ContactScreenState extends State<ContactScreen> {
                         },
                         icon: const Icon(
                           Icons.search,
-                          color: darkBlueColor,
+                          color: AppColors.darkBlueColor,
                           size: 32,
                         ),
                       ),
@@ -170,19 +170,19 @@ class _ContactScreenState extends State<ContactScreen> {
                         },
                         icon: const Icon(
                           Icons.close,
-                          color: darkBlueColor,
+                          color: AppColors.darkBlueColor,
                           size: 28,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
                         borderSide:
-                            const BorderSide(color: darkBlueColor, width: 2),
+                            const BorderSide(color: AppColors.darkBlueColor, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
                         borderSide:
-                            const BorderSide(color: darkBlueColor, width: 2),
+                            const BorderSide(color: AppColors.darkBlueColor, width: 2),
                       ),
                     ),
                   ),
@@ -254,7 +254,7 @@ class _ContactScreenState extends State<ContactScreen> {
       subtitle: Text(numbers[index]),
       leading: CircleAvatar(
         radius: 24,
-        backgroundColor: lightBlueColor.withOpacity(0.8),
+        backgroundColor: AppColors.lightBlueColor.withOpacity(0.8),
         backgroundImage: isCheckImage ? MemoryImage(images[index]!) : null,
         child: Center(
           child: isCheckImage

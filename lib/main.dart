@@ -35,10 +35,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          scaffoldBackgroundColor: lightFullBlueColor,
+          scaffoldBackgroundColor: AppColors.lightFullBlueColor,
           fontFamily: "Varela Round Regular",
           appBarTheme: const AppBarTheme(
-            backgroundColor: lightBlueColor,
+            backgroundColor: AppColors.lightBlueColor,
             elevation: 0.0,
           )),
       debugShowCheckedModeBanner: false,
@@ -59,10 +59,10 @@ class MyAppLoggedIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          scaffoldBackgroundColor: lightFullBlueColor,
+          scaffoldBackgroundColor: AppColors.lightFullBlueColor,
           fontFamily: "Varela Round Regular",
           appBarTheme: const AppBarTheme(
-            backgroundColor: lightBlueColor,
+            backgroundColor: AppColors.lightBlueColor,
             elevation: 0.0,
           )),
       debugShowCheckedModeBanner: false,

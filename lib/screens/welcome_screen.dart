@@ -37,13 +37,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         Text("Welcome to ",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: darkBlueColor,
+                                color: AppColors.darkBlueColor,
                                 fontSize: 30,
                                 fontFamily: "Rounded Black")),
                         Text("FlyChat!",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: darkBlueColor,
+                                color: AppColors.darkBlueColor,
                                 fontSize: 32,
                                 fontFamily: "Rounded Black")),
                       ],

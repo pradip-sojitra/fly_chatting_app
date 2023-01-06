@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   "FlyChat!",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: darkBlueColor,
+                      color: AppColors.darkBlueColor,
                       fontSize: 34,
                       letterSpacing: 3,
                       fontFamily: "Rounded Black"),
