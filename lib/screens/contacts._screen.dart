@@ -1,17 +1,18 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:developer';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/contacts_provider.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class ContactScreen extends StatefulWidget {
- const ContactScreen({
+  const ContactScreen({
     super.key,
     required this.firebaseUser,
     required this.userModel,
@@ -25,48 +26,10 @@ class ContactScreen extends StatefulWidget {
 }
 
 class _ContactScreenState extends State<ContactScreen> {
-  TextEditingController searchController = TextEditingController();
-  List<Contact> contacts = [];
-  bool isLoading = true;
-  String isSearching = '';
-
-  List<String> names = [];
-  List<String> numbers = [];
-  List<Uint8List?> images = [];
-  List<String> nameFirst = [];
-
   @override
   void initState() {
-    getContactPermission();
+    context.read<ContactSearchProvider>().getContactPermission();
     super.initState();
-  }
-
-  Future<void> getContactPermission() async {
-    if (await Permission.contacts.isGranted) {
-      await getAllContacts();
-    } else {
-      await Permission.contacts.request();
-    }
-  }
-
-  Future<void> getAllContacts() async {
-    final contactsAll =
-        await ContactsService.getContacts(withThumbnails: false);
-
-    for (final contact in contactsAll) {
-      contact.phones!.toSet().forEach((phone) {
-        names.add(contact.displayName!);
-        numbers.add(contact.phones![0].value!);
-        images.add(contact.avatar);
-        nameFirst.add(contact.displayName![0]);
-      });
-    }
-    setState(() {
-      contacts = contactsAll;
-    });
-    setState(() {
-      isLoading = false;
-    });
   }
 
   Future<ChatCheckModel?> getParticipantChat(UserModel targetUser) async {
@@ -80,8 +43,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
     if (checkTargetChat.docs.isNotEmpty) {
       final getChatData = checkTargetChat.docs[0].data();
-      ChatCheckModel existsParticipant =
-          ChatCheckModel.fromMap(getChatData);
+      ChatCheckModel existsParticipant = ChatCheckModel.fromMap(getChatData);
 
       chatCheckData = existsParticipant;
       log('chat is exists');
@@ -110,6 +72,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -128,8 +91,9 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
         elevation: 0,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.darkBlueColor))
+      body: context.watch<ContactSearchProvider>().isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.darkBlueColor))
           : Column(
               children: [
                 Padding(
@@ -140,11 +104,10 @@ class _ContactScreenState extends State<ContactScreen> {
                     bottom: 8,
                   ),
                   child: TextFormField(
-                    controller: searchController,
+                    controller:
+                        context.read<ContactSearchProvider>().searchController,
                     onChanged: (value) {
-                      setState(() {
-                        isSearching = value;
-                      });
+                      context.read<ContactSearchProvider>().changedValue(value);
                     },
                     decoration: InputDecoration(
                       hintText: 'Search',
@@ -153,9 +116,7 @@ class _ContactScreenState extends State<ContactScreen> {
                         vertical: 16,
                       ),
                       prefixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {});
-                        },
+                        onPressed: () {},
                         icon: const Icon(
                           Icons.search,
                           color: AppColors.darkBlueColor,
@@ -164,9 +125,7 @@ class _ContactScreenState extends State<ContactScreen> {
                       ),
                       suffixIcon: IconButton(
                         onPressed: () {
-                          setState(() {
-                            searchController.clear();
-                          });
+                          context.read<ContactSearchProvider>().clearSearch();
                         },
                         icon: const Icon(
                           Icons.close,
@@ -176,32 +135,35 @@ class _ContactScreenState extends State<ContactScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
-                        borderSide:
-                            const BorderSide(color: AppColors.darkBlueColor, width: 2),
+                        borderSide: const BorderSide(
+                            color: AppColors.darkBlueColor, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
-                        borderSide:
-                            const BorderSide(color: AppColors.darkBlueColor, width: 2),
+                        borderSide: const BorderSide(
+                            color: AppColors.darkBlueColor, width: 2),
                       ),
                     ),
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: numbers.length,
-                    itemBuilder: (context, index) {
-                      if (names[index]
-                              .toLowerCase()
-                              .startsWith(isSearching.toLowerCase()) ||
-                          numbers[index]
-                              .startsWith(isSearching.toLowerCase())) {
-                        return contactsAllData(index);
-                      }
-                      if (searchController.text == '') {
-                        return contactsAllData(index);
-                      }
-                      return Container();
+                  child: Consumer<ContactSearchProvider>(
+                    builder: (context, value, child) {
+                      return ListView.builder(
+                        itemCount: value.numbers.length,
+                        itemBuilder: (context, index) {
+                          if (value.names[index].toLowerCase().startsWith(
+                                  value.isSearching.toLowerCase()) ||
+                              value.numbers[index].startsWith(
+                                  value.isSearching.toLowerCase())) {
+                            return contactsAllData(index);
+                          }
+                          if (value.searchController.text == '') {
+                            return contactsAllData(index);
+                          }
+                          return Container();
+                        },
+                      );
                     },
                   ),
                 ),
@@ -211,60 +173,61 @@ class _ContactScreenState extends State<ContactScreen> {
   }
 
   Widget contactsAllData(int index) {
-    final isCheckImage = images[index]!.isNotEmpty;
-    return ListTile(
-      onTap: () async {
-        final number = numbers[index]
-            .replaceAll('-', '')
-            .replaceAll(' ', '')
-            .replaceAll('+91', '')
-            .replaceAll('+261', '');
+    return Consumer<ContactSearchProvider>(
+      builder: (context, value, child) {
+        final isCheckImage = value.images[index]!.isNotEmpty;
+        return ListTile(
+          onTap: () async {
+            final number = value.numbers[index]
+                .replaceAll('-', '')
+                .replaceAll(' ', '')
+                .replaceAll('+91', '')
+                .replaceAll('+261', '');
 
-        final targetData = await FirebaseFirestore.instance
-            .collection('users')
-            .where('phoneNumber', isEqualTo: number)
-            .get();
-        final dataAll = targetData.docs[0].data();
-        UserModel targetUser = UserModel.fromMap(dataAll);
+            final targetData = await FirebaseFirestore.instance
+                .collection('users')
+                .where('phoneNumber', isEqualTo: number)
+                .get();
+            final dataAll = targetData.docs[0].data();
+            UserModel targetUser = UserModel.fromMap(dataAll);
 
-        log('---------------------local-----------------------$number----------------------------------------------------');
-        log('---------------------fireStoreData-----------------------${targetUser.fullName}---------------------------');
+            log('---------------------local-----------------------$number----------------------------------------------------');
+            log('---------------------fireStoreData-----------------------${targetUser.fullName} ${targetUser.phoneNumber}---------------------------');
 
-        ChatCheckModel? chatCheck = await getParticipantChat(targetUser);
+            ChatCheckModel? chatCheck = await getParticipantChat(targetUser);
 
-        if (chatCheck != null) {
-          Navigator.of(context).pop();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ChatScreen(
-                firebaseUser: widget.firebaseUser,
-                userModel: widget.userModel,
-                targetUser: targetUser,
-                chatCheck: chatCheck,
-                contactImages: images[index],
-                contactNameFirst: nameFirst[index],
-                contactName: names[index],
-                contactNumbers: number,
-              ),
-            ),
-          );
-        }
-      },
-      title: Text(names[index]),
-      subtitle: Text(numbers[index]),
-      leading: CircleAvatar(
-        radius: 24,
-        backgroundColor: AppColors.lightBlueColor.withOpacity(0.8),
-        backgroundImage: isCheckImage ? MemoryImage(images[index]!) : null,
-        child: Center(
-          child: isCheckImage
-              ? null
-              : Text(
-                  nameFirst[index].toUpperCase(),
-                  style: const TextStyle(fontSize: 22, color: Colors.black),
+            if (chatCheck != null) {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    firebaseUser: widget.firebaseUser,
+                    userModel: widget.userModel,
+                    targetUser: targetUser,
+                    chatCheck: chatCheck,
+                  ),
                 ),
-        ),
-      ),
+              );
+            }
+          },
+          title: Text(value.names[index]),
+          subtitle: Text(value.numbers[index]),
+          leading: CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.lightBlueColor.withOpacity(0.8),
+            backgroundImage:
+                isCheckImage ? MemoryImage(value.images[index]!) : null,
+            child: Center(
+              child: isCheckImage
+                  ? null
+                  : Text(
+                      value.nameFirst[index].toUpperCase(),
+                      style: const TextStyle(fontSize: 22, color: Colors.black),
+                    ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

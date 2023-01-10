@@ -10,7 +10,7 @@ import 'package:fly_chatting_app/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/theme/messenger_scaffold.dart';
+import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {

@@ -1,3 +1,19 @@
+// import 'package:flutter/material.dart';
+//
+// class AppColors{
+//   AppColors._();
+//
+//   static const Color greenDark = Color(0xff00cdbd);
+//   static const Color greenLight = Color(0xff00cdbd);
+//
+//   static const Color backgroundLight = Color(0xffffffff);
+//   static const Color backgroundDark = Color(0xff181a20);
+//
+//   static const Color greyDark = Color(0xff8696A0);
+//   static const Color greyLight = Color(0xff667781);
+// }
+
+
 import 'package:flutter/material.dart';
 
 class AppColors{

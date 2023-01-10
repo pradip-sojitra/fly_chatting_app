@@ -17,20 +17,12 @@ class ChatScreen extends StatefulWidget {
     required this.firebaseUser,
     required this.targetUser,
     required this.chatCheck,
-    this.contactName,
-    this.contactNumbers,
-    this.contactImages,
-    this.contactNameFirst,
   });
 
   final User firebaseUser;
   final UserModel userModel;
   final UserModel targetUser;
   final ChatCheckModel chatCheck;
-  final String? contactName;
-  final String? contactNumbers;
-  final Uint8List? contactImages;
-  final String? contactNameFirst;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

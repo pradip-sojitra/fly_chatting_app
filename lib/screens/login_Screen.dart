@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:fly_chatting_app/screens/phone_verification_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/theme/messenger_scaffold.dart';
+import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

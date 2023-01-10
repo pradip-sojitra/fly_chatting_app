@@ -10,7 +10,7 @@ import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_icon_button.dart';
 import 'package:fly_chatting_app/widgets/text_field.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/theme/messenger_scaffold.dart';
+import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 

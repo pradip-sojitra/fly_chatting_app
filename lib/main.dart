@@ -3,16 +3,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/contacts_provider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/splash_screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(const MyApp());
-
   User? user = FirebaseAuth.instance.currentUser;
 
   if (user != null) {
@@ -57,16 +57,21 @@ class MyAppLoggedIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          scaffoldBackgroundColor: AppColors.lightFullBlueColor,
-          fontFamily: "Varela Round Regular",
-          appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.lightBlueColor,
-            elevation: 0.0,
-          )),
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(userModel: userModel, firebaseUser: firebaseUser),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ContactSearchProvider(),),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+            scaffoldBackgroundColor: AppColors.lightFullBlueColor,
+            fontFamily: 'Varela Round Regular',
+            appBarTheme: const AppBarTheme(
+              backgroundColor: AppColors.lightBlueColor,
+              elevation: 0.0,
+            )),
+        debugShowCheckedModeBanner: false,
+        home: HomeScreen(userModel: userModel, firebaseUser: firebaseUser),
+      ),
     );
   }
 }
