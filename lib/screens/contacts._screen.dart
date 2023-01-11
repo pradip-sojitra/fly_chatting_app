@@ -74,7 +74,6 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     print('build');
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {

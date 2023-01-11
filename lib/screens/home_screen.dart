@@ -5,16 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/screens/contacts._screen.dart';
 import 'package:fly_chatting_app/screens/login_Screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:provider/provider.dart';
+
+enum SampleItem { itemOne }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
-    required this.userModel,
-    required this.firebaseUser,
+   required this.userModel,
+   required this.firebaseUser,
   });
 
   final User firebaseUser;
@@ -25,10 +29,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ThemeProvider>().getLocal();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('home build');
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Row(
           children: const [
@@ -45,28 +56,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Image(
-              image: AssetImage('assets/icons/search.png'),
-              height: 25,
-            ),
+          Consumer<ThemeProvider>(
+            builder: (context, provider, child) {
+              return Switch(
+                value: provider.isCheckTheme,
+                onChanged: (value) {
+                  provider.checkTheme();
+                },
+              );
+            },
           ),
           IconButton(
             onPressed: () {
-              FirebaseAuth.instance.signOut().then((value) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
-                  (route) => false,
-                );
-              });
+              print('-------------------------------------${widget.userModel.phoneNumber}-------------------------------------------');
             },
             icon: const Image(
-              image: AssetImage('assets/icons/menu-vertical.png'),
-              height: 28,
+              image: AssetImage('assets/icons/search.png'),
+              height: 22,
             ),
+          ),
+          PopupMenuButton(
+            iconSize: 30,
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                onTap: () async {
+                  await FirebaseAuth.instance.signOut().then((value) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  });
+                },
+                value: SampleItem.itemOne,
+                child: const Text('Log Out'),
+              ),
+            ],
           ),
         ],
       ),

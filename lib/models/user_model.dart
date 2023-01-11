@@ -5,7 +5,6 @@ class UserModel {
   String? fullName;
   String? about;
 
-
   UserModel({
     this.phoneNumber,
     this.uid,
@@ -14,12 +13,14 @@ class UserModel {
     this.about,
   });
 
-  UserModel.fromMap(Map<String, dynamic> data) {
-    phoneNumber = data['phoneNumber'];
-    uid = data['uid'];
-    profilePicture = data['profilePicture'];
-    fullName = data['fullName'];
-    about = data['about'];
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
+      phoneNumber: data['phoneNumber'],
+      uid: data['uid'],
+      profilePicture: data['profilePicture'],
+      fullName: data['fullName'],
+      about: data['about'],
+    );
   }
 
   Map<String, dynamic> toMap() {

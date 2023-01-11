@@ -15,7 +15,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen(
+   const ProfileScreen(
       {super.key, required this.firebaseUser, required this.userModel});
 
   final User firebaseUser;
