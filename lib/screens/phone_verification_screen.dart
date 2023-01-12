@@ -143,7 +143,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) =>
-                  HomeScreen(firebaseUser: user, userModel: userModel),
+                  const HomeScreen(),
             ),
             (route) => false,
           );

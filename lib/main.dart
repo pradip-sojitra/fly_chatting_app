@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/providers/contacts_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
@@ -40,7 +39,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             theme: val.isCheckTheme ? ThemeData.dark() : ThemeData.light(),
             debugShowCheckedModeBanner: false,
-            home: MainScreen(),
+            home:const  MainScreen(),
           );
         },
       ),
@@ -49,10 +48,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatelessWidget {
-  User? user = FirebaseAuth.instance.currentUser;
+  const MainScreen({super.key});
 
-  // Future<void> usersData =
-  //     FirebaseData.getUserData(uid: FirebaseAuth.instance.currentUser!.uid);
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +57,7 @@ class MainScreen extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.data != null) {
-          return FutureBuilder(
-            future: FirebaseData.getUserData(uid: user!.uid),
-            builder: (context, allData) {
-              if (snapshot.hasData) {
-                return HomeScreen(
-                    userModel: allData.data!, firebaseUser: user!);
-              }
-              return Container();
-            },
-          );
+          return const HomeScreen();
         } else {
           return const SplashScreen();
         }
@@ -86,38 +74,3 @@ appBarTheme: const AppBarTheme(
 backgroundColor: AppColors.lightBlueColor,
 elevation: 0.0,
 ))*/
-
-//
-// User? user = FirebaseAuth.instance.currentUser;
-//
-// if (user != null) {
-// UserModel? userModel = await FirebaseData.getUserData(uid: user.uid);
-//
-// if (userModel != null) {
-// runApp(MyAppLoggedIn(userModel: userModel, firebaseUser: user));
-// } else {
-// runApp(const MyApp());
-// }
-// } else {
-// runApp(const MyApp());
-// }
-
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       theme: ThemeData(
-//           scaffoldBackgroundColor: AppColors.lightFullBlueColor,
-//           fontFamily: "Varela Round Regular",
-//           appBarTheme: const AppBarTheme(
-//             backgroundColor: AppColors.lightBlueColor,
-//             elevation: 0.0,
-//           )),
-//       debugShowCheckedModeBanner: false,
-//       home: const SplashScreen(),
-//     );
-//   }
-// }

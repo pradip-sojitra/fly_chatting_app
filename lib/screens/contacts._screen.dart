@@ -2,9 +2,9 @@
 
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
+import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/providers/contacts_provider.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
@@ -12,14 +12,7 @@ import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:provider/provider.dart';
 
 class ContactScreen extends StatefulWidget {
-  const ContactScreen({
-    super.key,
-    required this.firebaseUser,
-    required this.userModel,
-  });
-
-  final User firebaseUser;
-  final UserModel userModel;
+  const ContactScreen({super.key});
 
   @override
   State<ContactScreen> createState() => _ContactScreenState();
@@ -37,7 +30,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
     final checkTargetChat = await FirebaseFirestore.instance
         .collection('chatCheck')
-        .where('participant.${widget.userModel.uid}', isEqualTo: true)
+        .where('participant.${sharedPref.uid}', isEqualTo: true)
         .where('participant.${targetUser.uid}', isEqualTo: true)
         .get();
 
@@ -54,7 +47,7 @@ class _ContactScreenState extends State<ContactScreen> {
         lastMessage: '',
         lastTime: '',
         participant: {
-          widget.userModel.uid.toString(): true,
+          sharedPref.uid.toString(): true,
           targetUser.uid.toString(): true,
         },
       );
@@ -200,8 +193,6 @@ class _ContactScreenState extends State<ContactScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ChatScreen(
-                    firebaseUser: widget.firebaseUser,
-                    userModel: widget.userModel,
                     targetUser: targetUser,
                     chatCheck: chatCheck,
                   ),

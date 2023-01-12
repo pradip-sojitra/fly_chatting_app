@@ -10,31 +10,35 @@ import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/screens/contacts._screen.dart';
 import 'package:fly_chatting_app/screens/login_Screen.dart';
+import 'package:fly_chatting_app/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:provider/provider.dart';
 
-enum SampleItem { itemOne }
+enum SampleItem { itemOne, itemSecond }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({
-    super.key,
-   required this.userModel,
-   required this.firebaseUser,
-  });
-
-  final User firebaseUser;
-  final UserModel userModel;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 450));
+
     context.read<ThemeProvider>().getLocal();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,12 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
     print('home build');
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         title: Row(
           children: const [
             Image(
               image: AssetImage('assets/images/main_icon_3_5.png'),
-              height: 60,
-              width: 60,
+              height: 50,
+              width: 50,
             ),
             SizedBox(width: 10),
             Text(
@@ -59,24 +64,35 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, provider, child) {
-              return Switch(
-                value: provider.isCheckTheme,
-                onChanged: (value) {
+              return IconButton(
+                onPressed: () {
                   provider.checkTheme();
                 },
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 450),
+                  child: provider.isCheckTheme
+                      ? const Image(
+                          image: AssetImage('assets/icons/moon.png'),
+                          color: Colors.white,
+                          height: 25,
+                        )
+                      : const Icon(
+                          Icons.sunny,
+                          size: 24,
+                        ),
+                ),
               );
             },
           ),
           IconButton(
-            onPressed: () {
-            },
+            onPressed: () {},
             icon: const Image(
               image: AssetImage('assets/icons/search.png'),
-              height: 22,
+              height: 20,
             ),
           ),
           PopupMenuButton(
-            iconSize: 30,
+            iconSize: 28,
             itemBuilder: (BuildContext context) => [
               PopupMenuItem(
                 onTap: () async {
@@ -92,6 +108,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 value: SampleItem.itemOne,
                 child: const Text('Log Out'),
               ),
+              PopupMenuItem(
+                onTap: () async {
+                  // await FirebaseAuth.instance.signOut().then((value) {
+                  //   Navigator.of(context).push(
+                  //     MaterialPageRoute(
+                  //       builder: (context) =>  const ProfileScreen(),
+                  //     ),
+                  //   );
+                  // });
+                },
+                value: SampleItem.itemOne,
+                child: const Text('Profile'),
+              ),
             ],
           ),
         ],
@@ -99,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chatCheck')
-            .where('participant.${widget.userModel.uid}', isEqualTo: true)
+            .where('participant.${sharedPref.uid}', isEqualTo: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     List<String> participantKeys =
                         chatCheck.participant!.keys.toList();
 
-                    participantKeys.remove(widget.userModel.uid);
+                    participantKeys.remove(sharedPref.uid);
 
                     return FutureBuilder(
                       future: FirebaseData.getUserData(uid: participantKeys[0]),
@@ -129,8 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) {
                                     return ChatScreen(
-                                        userModel: widget.userModel,
-                                        firebaseUser: widget.firebaseUser,
                                         targetUser: targetUsers,
                                         chatCheck: chatCheck);
                                   },
@@ -218,10 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
               builder: (context) {
-                return ContactScreen(
-                  firebaseUser: widget.firebaseUser,
-                  userModel: widget.userModel,
-                );
+                return const ContactScreen();
               },
             ),
           );
@@ -283,10 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
                           return ChatScreen(
-                              userModel: widget.userModel,
-                              firebaseUser: widget.firebaseUser,
-                              targetUser: targetUsers,
-                              chatCheck: chatCheck);
+                              targetUser: targetUsers, chatCheck: chatCheck);
                         },
                       ));
                     },

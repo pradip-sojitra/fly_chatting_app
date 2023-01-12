@@ -1,11 +1,10 @@
 import 'dart:developer';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/chat_data_participant_model.dart';
 import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
+import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:intl/intl.dart';
@@ -13,14 +12,10 @@ import 'package:intl/intl.dart';
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
     super.key,
-    required this.userModel,
-    required this.firebaseUser,
     required this.targetUser,
     required this.chatCheck,
   });
 
-  final User firebaseUser;
-  final UserModel userModel;
   final UserModel targetUser;
   final ChatCheckModel chatCheck;
 
@@ -96,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ChatDataModel currentMessage = ChatDataModel.fromMap(
                             snapshot.data!.docs[index].data());
                         final bool isUserCheck =
-                            currentMessage.sender == widget.userModel.uid;
+                            currentMessage.sender == sharedPref.uid;
                         return Align(
                           alignment: isUserCheck
                               ? Alignment.topRight
@@ -251,7 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final String messageId = DateTime.now().microsecondsSinceEpoch.toString();
       ChatDataModel newMessage = ChatDataModel(
         text: msg,
-        sender: widget.userModel.uid,
+        sender: sharedPref.uid,
         time: DateFormat('hh:mm a').format(DateTime.now()).toString(),
         messageId: messageId,
       );

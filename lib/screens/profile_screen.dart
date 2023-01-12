@@ -18,10 +18,10 @@ import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
    const ProfileScreen(
-      {super.key, required this.firebaseUser, required this.userModel});
+      {super.key, this.firebaseUser, this.userModel});
 
-  final User firebaseUser;
-  final UserModel userModel;
+  final User? firebaseUser;
+  final UserModel? userModel;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -209,30 +209,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> uploadImages() async {
     UploadTask uploadTask = FirebaseStorage.instance
         .ref('profilePictures')
-        .child(widget.userModel.uid.toString())
+        .child(widget.userModel!.uid.toString())
         .putFile(profilePicture!);
 
     final String imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
     final String fullName = _fullNameController.text.trim();
     final String about = _aboutController.text.trim();
 
-    widget.userModel.profilePicture = imageUrl;
-    widget.userModel.fullName = fullName;
-    widget.userModel.about = about;
+    widget.userModel!.profilePicture = imageUrl;
+    widget.userModel!.fullName = fullName;
+    widget.userModel!.about = about;
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(widget.userModel.uid)
-        .set(widget.userModel.toMap())
+        .doc(widget.userModel!.uid)
+        .set(widget.userModel!.toMap())
         .then((value) {
       Navigator.of(context).popUntil((route) => route.isFirst);
       context.read<UserDataProvider>().usersData();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) {
-            return HomeScreen(
-              userModel: widget.userModel,
-              firebaseUser: widget.firebaseUser,
+            return const HomeScreen(
             );
           },
         ),

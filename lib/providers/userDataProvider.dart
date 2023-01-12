@@ -10,7 +10,6 @@ class UserDataProvider extends ChangeNotifier {
   void usersData() async {
     UserModel? userModel = await FirebaseData.getUserData(uid: user!.uid);
 
-
     if (userModel != null) {
       sharedPref.uid = userModel.uid.toString();
       sharedPref.phoneNumber = userModel.phoneNumber.toString();
