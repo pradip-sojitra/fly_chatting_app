@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_icon_button.dart';
@@ -13,6 +14,7 @@ import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
    const ProfileScreen(
@@ -224,6 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .set(widget.userModel.toMap())
         .then((value) {
       Navigator.of(context).popUntil((route) => route.isFirst);
+      context.read<UserDataProvider>().usersData();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) {

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
@@ -12,6 +15,7 @@ import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
   const PhoneVerificationScreen({
@@ -135,6 +139,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
 
         if (userModel != null) {
+          context.read<UserDataProvider>().usersData();
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) =>
