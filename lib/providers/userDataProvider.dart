@@ -16,6 +16,7 @@ class UserDataProvider extends ChangeNotifier {
       sharedPref.fullName = userModel.fullName.toString();
       sharedPref.profilePicture = userModel.profilePicture.toString();
       sharedPref.about = userModel.about.toString();
+      print('----------------------------------------- Local UserData Added -----------------------------------------------');
     }
     notifyListeners();
   }

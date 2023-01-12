@@ -37,9 +37,9 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {
           return MaterialApp(
-            theme: val.isCheckTheme ? ThemeData.dark() : ThemeData.light(),
+            theme: val.isChangeTheme ? ThemeData.dark() : ThemeData.light(),
             debugShowCheckedModeBanner: false,
-            home:const  MainScreen(),
+            home: const MainScreen(),
           );
         },
       ),
@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {

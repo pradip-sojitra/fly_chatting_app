@@ -17,8 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-   const ProfileScreen(
-      {super.key, this.firebaseUser, this.userModel});
+  const ProfileScreen({super.key, this.firebaseUser, this.userModel});
 
   final User? firebaseUser;
   final UserModel? userModel;
@@ -207,6 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> uploadImages() async {
+    context.read<UserDataProvider>().usersData();
     UploadTask uploadTask = FirebaseStorage.instance
         .ref('profilePictures')
         .child(widget.userModel!.uid.toString())
@@ -226,12 +226,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .set(widget.userModel!.toMap())
         .then((value) {
       Navigator.of(context).popUntil((route) => route.isFirst);
-      context.read<UserDataProvider>().usersData();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) {
-            return const HomeScreen(
-            );
+            return const HomeScreen();
           },
         ),
       );

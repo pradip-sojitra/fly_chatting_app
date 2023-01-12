@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
@@ -40,20 +41,6 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        leading: CupertinoButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
-            size: 34,
-          ),
-        ),
-      ),
       body: Center(
         child: Form(
           child: Padding(
@@ -74,7 +61,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                 const SizedBox(height: 6),
                 Text(
                   widget.phoneNumber.toString(),
-                  style: const TextStyle(fontSize: 18, color: AppColors.darkBlueColor),
+                  style: const TextStyle(
+                      fontSize: 18, color: AppColors.darkBlueColor),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 70),
@@ -133,21 +121,18 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           .get();
 
       if (checkUserData.docs.isNotEmpty) {
-        final getUserdata = checkUserData.docs[0].data();
-        UserModel userModel = UserModel.fromMap(getUserdata);
+        // final getUserdata = checkUserData.docs[0].data();
+        // UserModel userModel = UserModel.fromMap(getUserdata);
+        context.read<UserDataProvider>().usersData();
 
-        log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
+        // log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
 
-        if (userModel != null) {
-          context.read<UserDataProvider>().usersData();
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) =>
-                  const HomeScreen(),
-            ),
-            (route) => false,
-          );
-        }
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+          (route) => false,
+        );
       } else {
         UserModel newUserCreate = UserModel(
             fullName: '',

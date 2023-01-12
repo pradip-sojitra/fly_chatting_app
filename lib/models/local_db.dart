@@ -18,6 +18,7 @@ class SharedPrefs {
   }
 
   set uid(String value) => _sharedPreferences!.setString('uid', value);
+
   String get uid => _sharedPreferences!.getString('uid')!;
 
   set fullName(String value) =>

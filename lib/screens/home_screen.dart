@@ -24,21 +24,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 450));
-
     context.read<ThemeProvider>().getLocal();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -70,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 },
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 450),
-                  child: provider.isCheckTheme
+                  child: provider.isChangeTheme
                       ? const Image(
                           image: AssetImage('assets/icons/moon.png'),
                           color: Colors.white,
@@ -96,6 +85,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             itemBuilder: (BuildContext context) => [
               PopupMenuItem(
                 onTap: () async {
+                  // await FirebaseAuth.instance.signOut().then((value) {
+                  //   Navigator.of(context).push(
+                  //     MaterialPageRoute(
+                  //       builder: (context) =>  const ProfileScreen(),
+                  //     ),
+                  //   );
+                  // });
+                },
+                value: SampleItem.itemOne,
+                child: const Text('Profile'),
+              ),
+              PopupMenuItem(
+                onTap: () async {
                   await FirebaseAuth.instance.signOut().then((value) {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
@@ -107,19 +109,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 },
                 value: SampleItem.itemOne,
                 child: const Text('Log Out'),
-              ),
-              PopupMenuItem(
-                onTap: () async {
-                  // await FirebaseAuth.instance.signOut().then((value) {
-                  //   Navigator.of(context).push(
-                  //     MaterialPageRoute(
-                  //       builder: (context) =>  const ProfileScreen(),
-                  //     ),
-                  //   );
-                  // });
-                },
-                value: SampleItem.itemOne,
-                child: const Text('Profile'),
               ),
             ],
           ),
