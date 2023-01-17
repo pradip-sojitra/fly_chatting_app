@@ -17,26 +17,38 @@ class SharedPrefs {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
 
+  logOut(){
+    _sharedPreferences?.clear();
+  }
+
   set uid(String value) => _sharedPreferences!.setString('uid', value);
 
-  String get uid => _sharedPreferences!.getString('uid')!;
+  String get uid => _sharedPreferences!.getString('uid')??'';
 
   set fullName(String value) =>
       _sharedPreferences!.setString('fullName', value);
 
-  String get fullName => _sharedPreferences!.getString('fullName')!;
+  String get fullName => _sharedPreferences!.getString('fullName')??'';
 
   set phoneNumber(String value) =>
       _sharedPreferences!.setString('phoneNumber', value);
 
-  String get phoneNumber => _sharedPreferences!.getString('phoneNumber')!;
+  String get phoneNumber => _sharedPreferences!.getString('phoneNumber')??'';
 
   set profilePicture(String value) =>
       _sharedPreferences!.setString('profilePicture', value);
 
-  String get profilePicture => _sharedPreferences!.getString('profilePicture')!;
+  String get profilePicture => _sharedPreferences!.getString('profilePicture')??'';
 
   set about(String value) => _sharedPreferences!.setString('about', value);
 
-  String get about => _sharedPreferences!.getString('about')!;
+  String get about => _sharedPreferences!.getString('about')??'';
+
+  void removeSharedPrefData()async{
+   await _sharedPreferences!.remove('uid');
+   await _sharedPreferences!.remove('fullName');
+   await _sharedPreferences!.remove('phoneNumber');
+   await _sharedPreferences!.remove('profilePicture');
+   await _sharedPreferences!.remove('about');
+  }
 }

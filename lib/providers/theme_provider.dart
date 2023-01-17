@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeProvider extends ChangeNotifier {
   bool isChangeTheme = false;
 
-  void checkTheme() {
+  void changeTheme() {
     isChangeTheme = !isChangeTheme;
     setLocal();
     notifyListeners();

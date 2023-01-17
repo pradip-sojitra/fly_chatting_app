@@ -13,6 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await sharedPref.init();
+  // await sharedPref.logOut();
 
   runApp(const MyApp());
 }
@@ -30,9 +31,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => UserDataProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => UserDataProvider(),
+        // ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {

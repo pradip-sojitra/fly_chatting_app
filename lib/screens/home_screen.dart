@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +27,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  SampleItem? selectedMenu;
+
   @override
   void initState() {
     super.initState();
@@ -32,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print('home build');
+    log('home build');
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -55,7 +60,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             builder: (context, provider, child) {
               return IconButton(
                 onPressed: () {
-                  provider.checkTheme();
+                  provider.changeTheme();
+                  log('------------------------------------- ${sharedPref.fullName} --------------------------------------');
                 },
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 450),
@@ -74,31 +80,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             },
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              log('------------------------------------- ${sharedPref.fullName} --------------------------------------');
+            },
             icon: const Image(
               image: AssetImage('assets/icons/search.png'),
               height: 20,
             ),
           ),
-          PopupMenuButton(
+          PopupMenuButton<SampleItem>(
+            initialValue: selectedMenu,
+            onSelected: (SampleItem item) {
+              setState(() {
+                selectedMenu = item;
+              });
+            },
             iconSize: 28,
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
+              PopupMenuItem<SampleItem>(
                 onTap: () async {
-                  // await FirebaseAuth.instance.signOut().then((value) {
-                  //   Navigator.of(context).push(
-                  //     MaterialPageRoute(
-                  //       builder: (context) =>  const ProfileScreen(),
-                  //     ),
-                  //   );
-                  // });
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileScreen(),
+                      ));
                 },
                 value: SampleItem.itemOne,
                 child: const Text('Profile'),
               ),
-              PopupMenuItem(
+              PopupMenuItem<SampleItem>(
                 onTap: () async {
                   await FirebaseAuth.instance.signOut().then((value) {
+                    sharedPref.logOut();
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                         builder: (context) => const LoginScreen(),
@@ -107,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     );
                   });
                 },
-                value: SampleItem.itemOne,
+                value: SampleItem.itemSecond,
                 child: const Text('Log Out'),
               ),
             ],

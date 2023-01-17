@@ -114,6 +114,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     if (credential != null) {
       final User? user = FirebaseAuth.instance.currentUser;
       final String uid = user!.uid;
+      // context.read<UserDataProvider>().usersData();
 
       final checkUserData = await FirebaseFirestore.instance
           .collection('users')
@@ -121,11 +122,16 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           .get();
 
       if (checkUserData.docs.isNotEmpty) {
-        // final getUserdata = checkUserData.docs[0].data();
-        // UserModel userModel = UserModel.fromMap(getUserdata);
-        context.read<UserDataProvider>().usersData();
-
-        // log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
+        final getUserdata = checkUserData.docs[0].data();
+        UserModel userModel = UserModel.fromMap(getUserdata);
+        setState(() {
+          sharedPref.uid = userModel.uid.toString()??'';
+          sharedPref.fullName = userModel.fullName.toString()??'';
+          sharedPref.phoneNumber = userModel.phoneNumber.toString()??'';
+          sharedPref.profilePicture = userModel.profilePicture.toString()??'';
+          sharedPref.about = userModel.about.toString()??'';
+          log('------------------------------------- data added --------------------------------------');
+        });
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -133,6 +139,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           ),
           (route) => false,
         );
+
+        // log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
       } else {
         UserModel newUserCreate = UserModel(
             fullName: '',

@@ -1,13 +1,13 @@
 class UserModel {
   String? phoneNumber;
-  String? uid;
+  String uid;
   String? profilePicture;
   String? fullName;
   String? about;
 
   UserModel({
     this.phoneNumber,
-    this.uid,
+    required this.uid,
     this.profilePicture,
     this.fullName,
     this.about,

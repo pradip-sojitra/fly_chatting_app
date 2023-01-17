@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
@@ -206,7 +208,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> uploadImages() async {
-    context.read<UserDataProvider>().usersData();
     UploadTask uploadTask = FirebaseStorage.instance
         .ref('profilePictures')
         .child(widget.userModel!.uid.toString())
@@ -220,19 +221,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     widget.userModel!.fullName = fullName;
     widget.userModel!.about = about;
 
+    setState(() {
+      sharedPref.uid = widget.userModel!.uid;
+      sharedPref.fullName = fullName;
+      sharedPref.phoneNumber = widget.userModel!.phoneNumber.toString();
+      sharedPref.profilePicture = imageUrl;
+      sharedPref.about = about;
+      log('------------------------------------- data added --------------------------------------');
+    });
+
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userModel!.uid)
         .set(widget.userModel!.toMap())
         .then((value) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) {
-            return const HomeScreen();
-          },
-        ),
-      );
+      // context.read<UserDataProvider>().usersData();
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen(),), (route) => false);
     });
   }
 }

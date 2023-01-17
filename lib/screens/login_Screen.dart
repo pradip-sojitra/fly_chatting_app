@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/screens/phone_verification_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
@@ -142,6 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 BuildCupertinoButton(
                   onPressed: () {
                     checkValues();
+                    log('------------------------------------- ${sharedPref.fullName} --------------------------------------');
                   },
                   title: 'Log In',
                 ),
@@ -209,6 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch (_) {
       Messenger().messengerScaffold(text: 'Failed', context: context);
     }
+
   }
 
   void countrySelected() {
