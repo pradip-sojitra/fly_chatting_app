@@ -3,20 +3,16 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
+import 'package:fly_chatting_app/widgets/pincode.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:provider/provider.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
   const PhoneVerificationScreen({
@@ -66,7 +62,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 70),
-                pinCode(),
+                PinCode(controller: _pinCodeController),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,11 +121,11 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         final getUserdata = checkUserData.docs[0].data();
         UserModel userModel = UserModel.fromMap(getUserdata);
         setState(() {
-          sharedPref.uid = userModel.uid.toString()??'';
-          sharedPref.fullName = userModel.fullName.toString()??'';
-          sharedPref.phoneNumber = userModel.phoneNumber.toString()??'';
-          sharedPref.profilePicture = userModel.profilePicture.toString()??'';
-          sharedPref.about = userModel.about.toString()??'';
+          sharedPref.uid = userModel.uid.toString();
+          sharedPref.fullName = userModel.fullName.toString();
+          sharedPref.phoneNumber = userModel.phoneNumber.toString();
+          sharedPref.profilePicture = userModel.profilePicture.toString();
+          sharedPref.about = userModel.about.toString();
           log('------------------------------------- data added --------------------------------------');
         });
 
@@ -165,34 +161,5 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         });
       }
     }
-  }
-
-  Widget pinCode() {
-    return PinCodeTextField(
-      keyboardType: TextInputType.number,
-      controller: _pinCodeController,
-      length: 6,
-      enableActiveFill: true,
-      cursorColor: Colors.black,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      pinTheme: PinTheme(
-        shape: PinCodeFieldShape.box,
-        fieldWidth: 52,
-        fieldHeight: 52,
-        selectedColor: AppColors.darkBlueColor,
-        activeColor: AppColors.darkBlueColor,
-        inactiveColor: AppColors.lightBlueColor,
-        disabledColor: AppColors.lightBlueColor,
-        selectedFillColor: AppColors.lightFullBlueColor,
-        inactiveFillColor: AppColors.lightFullBlueColor,
-        activeFillColor: Colors.transparent,
-        borderWidth: 2,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      appContext: context,
-      onChanged: (String value) {
-        log(value);
-      },
-    );
   }
 }

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
+import 'package:fly_chatting_app/providers/contacts_data.dart';
 import 'package:fly_chatting_app/providers/contacts_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
-import 'package:fly_chatting_app/providers/userDataProvider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +13,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await sharedPref.init();
-  // await sharedPref.logOut();
 
   runApp(const MyApp());
 }
@@ -31,9 +30,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => UserDataProvider(),
-        // ),
+        ChangeNotifierProvider(
+          create: (context) => ContactData(),
+        ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {

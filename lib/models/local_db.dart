@@ -18,7 +18,7 @@ class SharedPrefs {
   }
 
   logOut(){
-    _sharedPreferences?.clear();
+    _sharedPreferences!.clear();
   }
 
   set uid(String value) => _sharedPreferences!.setString('uid', value);

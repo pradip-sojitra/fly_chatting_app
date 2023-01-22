@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log('build_ChatScreen');
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -89,10 +90,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       reverse: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        ChatDataModel currentMessage = ChatDataModel.fromMap(
-                            snapshot.data!.docs[index].data());
-                        final bool isUserCheck =
-                            currentMessage.sender == sharedPref.uid;
+
+                        ChatDataModel currentMessage = ChatDataModel.fromMap(snapshot.data!.docs[index].data());
+                        final bool isUserCheck = currentMessage.sender == sharedPref.uid;
+
                         return Align(
                           alignment: isUserCheck
                               ? Alignment.topRight
@@ -195,18 +196,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         minLines: 1,
                         maxLines: 3,
                         controller: messageController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Message',
-                          contentPadding: const EdgeInsets.only(
+                          hintStyle: TextStyle(color: Colors.grey),
+                          contentPadding: EdgeInsets.only(
                             right: 15,
                             left: 25,
                             bottom: 15,
                             top: 15,
                           ),
-                          filled: true,
-                          fillColor: Colors.white,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50),
                             borderSide: BorderSide.none,
                           ),
                         ),

@@ -9,6 +9,7 @@ import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
 import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/contacts_data.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/screens/contacts._screen.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    log('home build');
+    log('build_HomeScreen');
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -61,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               return IconButton(
                 onPressed: () {
                   provider.changeTheme();
-                  log('------------------------------------- ${sharedPref.fullName} --------------------------------------');
                 },
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 450),
@@ -82,13 +82,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           IconButton(
             onPressed: () {
               log('------------------------------------- ${sharedPref.fullName} --------------------------------------');
+
             },
             icon: const Image(
               image: AssetImage('assets/icons/search.png'),
               height: 20,
             ),
           ),
-          PopupMenuButton<SampleItem>(
+          PopupMenuButton(
             initialValue: selectedMenu,
             onSelected: (SampleItem item) {
               setState(() {
@@ -96,9 +97,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               });
             },
             iconSize: 28,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
-              PopupMenuItem<SampleItem>(
-                onTap: () async {
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -108,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 value: SampleItem.itemOne,
                 child: const Text('Profile'),
               ),
-              PopupMenuItem<SampleItem>(
+              PopupMenuItem(
                 onTap: () async {
                   await FirebaseAuth.instance.signOut().then((value) {
                     sharedPref.logOut();
@@ -146,11 +147,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         snapshot.data!.docs[index].data());
                     List<String> participantKeys =
                         chatCheck.participant!.keys.toList();
-
                     participantKeys.remove(sharedPref.uid);
 
                     return FutureBuilder(
-                      future: FirebaseData.getUserData(uid: participantKeys[0]),
+                      future: FirebaseData.userData(uid: participantKeys[0]),
                       builder: (context, userData) {
                         if (userData.connectionState == ConnectionState.done) {
                           if (userData.data != null) {
@@ -164,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         chatCheck: chatCheck);
                                   },
                                 ));
+
                               },
                               leading: CupertinoButton(
                                 onPressed: () {

@@ -44,11 +44,12 @@ class ContactSearchProvider extends ChangeNotifier {
         nameFirst.add(contact.displayName![0]);
       });
     }
-    isCheckValue();
+    isLoadingChange();
   }
 
-  void isCheckValue() {
+  void isLoadingChange(){
     isLoading = false;
     notifyListeners();
   }
+
 }

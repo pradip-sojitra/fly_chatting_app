@@ -1,14 +1,15 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
-import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/providers/contacts_provider.dart';
-import 'package:fly_chatting_app/screens/ChatScreen.dart';
+import 'package:fly_chatting_app/widgets/contact_list.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class ContactScreen extends StatefulWidget {
@@ -19,53 +20,44 @@ class ContactScreen extends StatefulWidget {
 }
 
 class _ContactScreenState extends State<ContactScreen> {
+  List<String> names = [];
+  List<String> numbers = [];
+  List<Uint8List?> images = [];
+  List<String> nameFirst = [];
+
   @override
   void initState() {
-    context.read<ContactSearchProvider>().getContactPermission();
+    getContactPermission();
     super.initState();
   }
 
-  Future<ChatCheckModel?> getParticipantChat(UserModel targetUser) async {
-    ChatCheckModel? chatCheckData;
-
-    final checkTargetChat = await FirebaseFirestore.instance
-        .collection('chatCheck')
-        .where('participant.${sharedPref.uid}', isEqualTo: true)
-        .where('participant.${targetUser.uid}', isEqualTo: true)
-        .get();
-
-    if (checkTargetChat.docs.isNotEmpty) {
-      final getChatData = checkTargetChat.docs[0].data();
-      ChatCheckModel existsParticipant = ChatCheckModel.fromMap(getChatData);
-
-      chatCheckData = existsParticipant;
-      log('chat is exists');
+  Future<void> getContactPermission() async {
+    if (await Permission.contacts.isGranted) {
+      await getAllContacts();
     } else {
-      final String chatId = DateTime.now().microsecondsSinceEpoch.toString();
-      ChatCheckModel newChatData = ChatCheckModel(
-        chatId: chatId,
-        lastMessage: '',
-        lastTime: '',
-        participant: {
-          sharedPref.uid.toString(): true,
-          targetUser.uid.toString(): true,
-        },
-      );
-
-      await FirebaseFirestore.instance
-          .collection('chatCheck')
-          .doc(newChatData.chatId)
-          .set(newChatData.toMap());
-
-      chatCheckData = newChatData;
-      log('new chatScreen is created');
+      await Permission.contacts.request();
     }
-    return chatCheckData;
   }
+
+  Future<void> getAllContacts() async {
+    final contactsAll =
+        await ContactsService.getContacts(withThumbnails: false);
+
+    for (final contact in contactsAll) {
+      contact.phones!.toSet().forEach((phone) {
+        names.add(contact.displayName!);
+        numbers.add(contact.phones![0].value!);
+        images.add(contact.avatar);
+        nameFirst.add(contact.displayName![0]);
+      });
+    }
+    context.read<ContactSearchProvider>().isLoadingChange();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    print('build');
+    log('build_ContactScreen');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -108,7 +100,9 @@ class _ContactScreenState extends State<ContactScreen> {
                         vertical: 16,
                       ),
                       prefixIcon: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+
+                        },
                         icon: const Icon(
                           Icons.search,
                           color: AppColors.darkBlueColor,
@@ -139,23 +133,37 @@ class _ContactScreenState extends State<ContactScreen> {
                   ),
                 ),
                 Expanded(
-                  child: Consumer<ContactSearchProvider>(
-                    builder: (context, value, child) {
-                      return ListView.builder(
-                        itemCount: value.numbers.length,
-                        itemBuilder: (context, index) {
-                          if (value.names[index].toLowerCase().startsWith(
-                                  value.isSearching.toLowerCase()) ||
-                              value.numbers[index].startsWith(
-                                  value.isSearching.toLowerCase())) {
-                            return contactsAllData(index);
-                          }
-                          if (value.searchController.text == '') {
-                            return contactsAllData(index);
-                          }
-                          return Container();
-                        },
-                      );
+                  child: ListView.builder(
+                    itemCount: numbers.length,
+                    itemBuilder: (context, index) {
+                      if (names[index].toLowerCase().contains(context
+                              .read<ContactSearchProvider>()
+                              .isSearching
+                              .toLowerCase()) ||
+                          numbers[index].contains(context
+                              .read<ContactSearchProvider>()
+                              .isSearching
+                              .toLowerCase())) {
+                        return ContactList(
+                            index: index,
+                            images: images,
+                            nameFirst: nameFirst,
+                            names: names,
+                            numbers: numbers);
+                      }
+                      if (context
+                              .read<ContactSearchProvider>()
+                              .searchController
+                              .text ==
+                          '') {
+                        return ContactList(
+                            index: index,
+                            images: images,
+                            nameFirst: nameFirst,
+                            names: names,
+                            numbers: numbers);
+                      }
+                      return Container();
                     },
                   ),
                 ),
@@ -163,112 +171,47 @@ class _ContactScreenState extends State<ContactScreen> {
             ),
     );
   }
-
-  Widget contactsAllData(int index) {
-    return Consumer<ContactSearchProvider>(
-      builder: (context, value, child) {
-        final isCheckImage = value.images[index]!.isNotEmpty;
-        return ListTile(
-          onTap: () async {
-            final number = value.numbers[index]
-                .replaceAll('-', '')
-                .replaceAll(' ', '')
-                .replaceAll('+91', '')
-                .replaceAll('+261', '');
-
-            final targetData = await FirebaseFirestore.instance
-                .collection('users')
-                .where('phoneNumber', isEqualTo: number)
-                .get();
-            final dataAll = targetData.docs[0].data();
-            UserModel targetUser = UserModel.fromMap(dataAll);
-
-            log('---------------------local-----------------------$number----------------------------------------------------');
-            log('---------------------fireStoreData-----------------------${targetUser.fullName} ${targetUser.phoneNumber}---------------------------');
-
-            ChatCheckModel? chatCheck = await getParticipantChat(targetUser);
-
-            if (chatCheck != null) {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                    targetUser: targetUser,
-                    chatCheck: chatCheck,
-                  ),
-                ),
-              );
-            }
-          },
-          title: Text(value.names[index]),
-          subtitle: Text(value.numbers[index]),
-          leading: CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.lightBlueColor.withOpacity(0.8),
-            backgroundImage:
-                isCheckImage ? MemoryImage(value.images[index]!) : null,
-            child: Center(
-              child: isCheckImage
-                  ? null
-                  : Text(
-                      value.nameFirst[index].toUpperCase(),
-                      style: const TextStyle(fontSize: 22, color: Colors.black),
-                    ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
-
-// List<UserModel> firebaseAllContacts = [];
-// List<UserModel> phoneAllContacts = [];
-
+//
 // Future<void> getAllContacts() async {
 //   final List<UserModel> firebaseContacts = [];
 //   final List<UserModel> phoneContacts = [];
 //
-//   firebaseAllContacts = firebaseContacts;
-//   phoneAllContacts = phoneContacts;
+//   final userCollection =
+//       await FirebaseFirestore.instance.collection('users').get();
+//   final getContactsInThePhone = await ContactsService.getContacts();
 //
-//   if (await FlutterContacts.requestPermission()) {
-//     final userCollection = await FirebaseFirestore.instance.collection('users').get();
-//     final getContactsInThePhone = await FlutterContacts.getContacts(withThumbnail: true);
+//   var isContactFound = false;
 //
-//     var isContactFound = false;
-//
-//     for (final contact in getContactsInThePhone) {
-//       for (final fireStoreContactData in userCollection.docs) {
-//         final firebaseContact = UserModel.fromJson(fireStoreContactData.data() as Map<String, String>);
-//         if (contact.phones[0].number
-//             .replaceAll(' ', '')
-//             .replaceAll('-', '')
-//             .replaceAll('+91', '')
-//             .replaceAll('+261', '') ==
-//             firebaseContact.phoneNumber) {
-//           firebaseContacts.add(firebaseContact);
-//           isContactFound = true;
-//           break;
-//         }
+//   for (final contact in getContactsInThePhone) {
+//     for (final fireStoreContactData in userCollection.docs) {
+//       final firebaseContact = UserModel.fromMap(fireStoreContactData.data());
+//       String isCheckNumber = contact.phones![0].value!
+//           .replaceAll(' ', '')
+//           .replaceAll('-', '')
+//           .replaceAll('+91', '')
+//           .replaceAll('+261', '');
+//       if (isCheckNumber == firebaseContact.phoneNumber) {
+//         firebaseContacts.add(firebaseContact);
+//         isContactFound = true;
+//         break;
 //       }
-//       if (!isContactFound) {
-//         phoneContacts.add(
-//           UserModel(
-//             about: '',
-//             firstName: contact.displayName,
-//             lastName: '',
-//             phoneNumber: contact.phones[0].number
-//                 .replaceAll(' ', '')
-//                 .replaceAll('-', '')
-//                 .replaceAll('+91', '')
-//                 .replaceAll('+261', ''),
-//             profilePicture: '',
-//             uid: '',
-//           ),
-//         );
-//       }
-//       isContactFound = false;
 //     }
+//     if (!isContactFound) {
+//       phoneContacts.add(
+//         UserModel(
+//           about: '',
+//           fullName: contact.displayName,
+//           phoneNumber: contact.phones![0].value!
+//               .replaceAll(' ', '')
+//               .replaceAll('-', '')
+//               .replaceAll('+91', '')
+//               .replaceAll('+261', ''),
+//           profilePicture: '',
+//           uid: '',
+//         ),
+//       );
+//     }
+//     isContactFound = false;
 //   }
 // }

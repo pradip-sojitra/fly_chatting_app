@@ -34,18 +34,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Text("Welcome to ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.darkBlueColor,
-                                fontSize: 30,
-                                fontFamily: "Rounded Black")),
-                        Text("FlyChat!",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.darkBlueColor,
-                                fontSize: 32,
-                                fontFamily: "Rounded Black")),
+                        Text(
+                          "Welcome to FlyChat!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.darkBlueColor,
+                              fontSize: 30,
+                              fontFamily: "Rounded Black"),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
