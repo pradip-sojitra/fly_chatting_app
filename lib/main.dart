@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
-import 'package:fly_chatting_app/providers/contacts_data.dart';
-import 'package:fly_chatting_app/providers/contacts_provider.dart';
+import 'package:fly_chatting_app/providers/contact_service_provider.dart';
+import 'package:fly_chatting_app/providers/search_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/splash_screen.dart';
@@ -25,14 +25,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ContactSearchProvider(),
-        ),
-        ChangeNotifierProvider(
           create: (context) => ThemeProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => ContactData(),
+          create: (context) => ContactProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => SearchProvider(contactProvider: context.read<ContactProvider>()),
+        )
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {

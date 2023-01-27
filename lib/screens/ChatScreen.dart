@@ -87,12 +87,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 } else {
                   if (snapshot.hasData) {
                     return ListView.builder(
+                      physics:const  NeverScrollableScrollPhysics(),
                       reverse: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-
-                        ChatDataModel currentMessage = ChatDataModel.fromMap(snapshot.data!.docs[index].data());
-                        final bool isUserCheck = currentMessage.sender == sharedPref.uid;
+                        ChatDataModel currentMessage = ChatDataModel.fromMap(
+                            snapshot.data!.docs[index].data());
+                        final bool isUserCheck =
+                            currentMessage.sender == sharedPref.uid;
 
                         return Align(
                           alignment: isUserCheck
@@ -239,7 +241,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> sendMessages() async {
+  void sendMessages()  {
     final String msg = messageController.text.trim();
 
     if (msg != '') {

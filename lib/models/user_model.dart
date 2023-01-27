@@ -1,12 +1,14 @@
-class UserModel {
-  String? phoneNumber;
+import 'package:equatable/equatable.dart';
+
+class UserModel extends Equatable {
+  String phoneNumber;
   String uid;
   String? profilePicture;
   String? fullName;
   String? about;
 
   UserModel({
-    this.phoneNumber,
+    required this.phoneNumber,
     required this.uid,
     this.profilePicture,
     this.fullName,
@@ -32,4 +34,8 @@ class UserModel {
       'about': about,
     };
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [phoneNumber];
 }

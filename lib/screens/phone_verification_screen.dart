@@ -19,12 +19,12 @@ class PhoneVerificationScreen extends StatefulWidget {
     super.key,
     required this.verificationId,
     this.phoneNumber,
-    this.number,
+    required this.number,
   });
 
   final String verificationId;
   final String? phoneNumber;
-  final String? number;
+  final String number;
 
   @override
   State<PhoneVerificationScreen> createState() =>
