@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/providers/contact_service_provider.dart';
 import 'package:fly_chatting_app/screens/welcome_screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,8 +15,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    super.initState();
     splash();
+    super.initState();
   }
 
   void splash() {
@@ -26,6 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
           (route) => false);
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

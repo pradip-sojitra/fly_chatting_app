@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/providers/contact_service_provider.dart';
-import 'package:fly_chatting_app/providers/search_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/screens/splash_screen.dart';
@@ -30,14 +29,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ContactProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => SearchProvider(contactProvider: context.read<ContactProvider>()),
-        )
+        // ChangeNotifierProvider(
+        //   create: (context) => SearchProvider(contactProvider: context.read<ContactProvider>()),
+        // )
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {
           return MaterialApp(
-            theme: val.isChangeTheme ? ThemeData.dark() : ThemeData.light(),
+            theme: val.isChangeTheme
+                ? ThemeData.dark().copyWith(
+                    floatingActionButtonTheme:
+                        const FloatingActionButtonThemeData(
+                            backgroundColor: Colors.blue))
+                : ThemeData.light(),
             debugShowCheckedModeBanner: false,
             home: const MainScreen(),
           );

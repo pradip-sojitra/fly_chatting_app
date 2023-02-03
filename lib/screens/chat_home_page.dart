@@ -6,6 +6,7 @@ import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/screens/ChatScreen.dart';
+import 'package:fly_chatting_app/screens/chat_contacts_screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 
 class ChatHomePage extends StatefulWidget {
@@ -18,118 +19,132 @@ class ChatHomePage extends StatefulWidget {
 class _ChatHomePageState extends State<ChatHomePage> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('chatCheck')
-          .where('participant.${sharedPref.uid}', isEqualTo: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          if (snapshot.hasData) {
-            return ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  ChatCheckModel chatCheck =
-                      ChatCheckModel.fromMap(snapshot.data!.docs[index].data());
-                  List<String> participantKeys =
-                      chatCheck.participant!.keys.toList();
-                  participantKeys.remove(sharedPref.uid);
+    return Scaffold(
 
-                  return FutureBuilder(
-                    future: FirebaseData.userData(uid: participantKeys[0]),
-                    builder: (context, userData) {
-                      if (userData.connectionState == ConnectionState.done) {
-                        if (userData.data != null) {
-                          UserModel targetUsers = userData.data!;
-                          return ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) {
-                                  return ChatScreen(
-                                      targetUser: targetUsers,
-                                      chatCheck: chatCheck);
-                                },
-                              ));
-                            },
-                            leading: CupertinoButton(
-                              onPressed: () {
-                                showProfilePicture(targetUsers, chatCheck);
-                              },
-                              padding: EdgeInsets.zero,
-                              child: CircleAvatar(
-                                  radius: 26,
-                                  backgroundColor: Colors.blueGrey.shade50,
-                                  backgroundImage: targetUsers.profilePicture ==
-                                          null
-                                      ? null
-                                      : NetworkImage(targetUsers.profilePicture
-                                          .toString()),
-                                  child: targetUsers.profilePicture == null
-                                      ? const Image(
-                                          image: AssetImage(
-                                              'assets/icons/person_2.png'),
-                                          height: 38,
-                                          color: Color(0xffadb5bd),
-                                        )
-                                      : null),
-                            ),
-                            title: Row(
-                              children: [
-                                Text(
-                                  targetUsers.fullName.toString(),
-                                  style: const TextStyle(
-                                      fontFamily: 'Rounded ExtraBold'),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  chatCheck.lastTime.toString(),
-                                  style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              chatCheck.lastMessage.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          );
-                        }
-                        return Container();
-                      } else {
-                        return Container();
-                      }
-                    },
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    height: 6,
-                    color: Color(0x0F7ca6fe),
-                    thickness: 6,
-                    indent: 32,
-                    endIndent: 0,
-                  );
-                });
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('chatCheck')
+            .where('participant.${sharedPref.uid}', isEqualTo: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           } else {
-            return const Center(
-              child: Text('No Chats'),
-            );
+            if (snapshot.hasData) {
+              return ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    ChatCheckModel chatCheck =
+                        ChatCheckModel.fromMap(snapshot.data!.docs[index].data());
+                    List<String> participantKeys =
+                        chatCheck.participant!.keys.toList();
+                    participantKeys.remove(sharedPref.uid);
+
+                    return FutureBuilder(
+                      future: FirebaseData.userData(uid: participantKeys[0]),
+                      builder: (context, userData) {
+                        if (userData.connectionState == ConnectionState.done) {
+                          if (userData.data != null) {
+                            UserModel targetUsers = userData.data!;
+                            return ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) {
+                                    return ChatScreen(
+                                        targetUser: targetUsers,
+                                        chatCheck: chatCheck);
+                                  },
+                                ));
+                              },
+                              leading: CupertinoButton(
+                                onPressed: () {
+                                  showProfilePicture(targetUsers, chatCheck);
+                                },
+                                padding: EdgeInsets.zero,
+                                child: CircleAvatar(
+                                    radius: 26,
+                                    backgroundColor: Colors.blueGrey.shade50,
+                                    backgroundImage: targetUsers.profilePicture ==
+                                            null
+                                        ? null
+                                        : NetworkImage(targetUsers.profilePicture
+                                            .toString()),
+                                    child: targetUsers.profilePicture == null
+                                        ? const Image(
+                                            image: AssetImage(
+                                                'assets/icons/person_2.png'),
+                                            height: 38,
+                                            color: Color(0xffadb5bd),
+                                          )
+                                        : null),
+                              ),
+                              title: Row(
+                                children: [
+                                  Text(
+                                    targetUsers.fullName.toString(),
+                                    style: const TextStyle(
+                                        fontFamily: 'Rounded ExtraBold'),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    chatCheck.lastTime.toString(),
+                                    style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Text(
+                                chatCheck.lastMessage.toString(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            );
+                          }
+                          return Container();
+                        } else {
+                          return Container();
+                        }
+                      },
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      height: 6,
+                      color: Color(0x0F7ca6fe),
+                      thickness: 6,
+                      indent: 32,
+                      endIndent: 0,
+                    );
+                  });
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            } else {
+              return const Center(
+                child: Text('No Chats'),
+              );
+            }
           }
-        }
-      },
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const ChatContactScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.chat),
+      ),
     );
   }
 

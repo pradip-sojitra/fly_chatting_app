@@ -233,7 +233,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .doc(widget.userModel!.uid)
         .set(widget.userModel!.toMap())
         .then((value) {
-      // context.read<UserDataProvider>().usersData();
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen(),), (route) => false);
     });
   }

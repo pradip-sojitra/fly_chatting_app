@@ -5,7 +5,7 @@ final sharedPref = SharedPrefs();
 class SharedPrefs {
   SharedPrefs._internal();
 
-  static final SharedPrefs _instance = SharedPrefs._internal();
+  static  final SharedPrefs _instance = SharedPrefs._internal();
 
   factory SharedPrefs() {
     return _instance;
@@ -44,11 +44,4 @@ class SharedPrefs {
 
   String get about => _sharedPreferences!.getString('about')??'';
 
-  void removeSharedPrefData()async{
-   await _sharedPreferences!.remove('uid');
-   await _sharedPreferences!.remove('fullName');
-   await _sharedPreferences!.remove('phoneNumber');
-   await _sharedPreferences!.remove('profilePicture');
-   await _sharedPreferences!.remove('about');
-  }
 }

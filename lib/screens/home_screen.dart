@@ -10,7 +10,7 @@ import 'package:fly_chatting_app/providers/theme_provider.dart';
 import 'package:fly_chatting_app/screens/Status_home_page.dart';
 import 'package:fly_chatting_app/screens/calls_home_screen.dart';
 import 'package:fly_chatting_app/screens/chat_home_page.dart';
-import 'package:fly_chatting_app/screens/contacts._screen.dart';
+import 'package:fly_chatting_app/screens/chat_contacts_screen.dart';
 import 'package:fly_chatting_app/screens/login_Screen.dart';
 import 'package:provider/provider.dart';
 
@@ -153,18 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
             StatusHomePage(),
             CallsHomeScreen(),
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-          onPressed: () async {
-            await context.read<ContactProvider>().getPhoneContacts();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const ContactScreen(),
-              ),
-            );
-          },
-          child: const Icon(Icons.chat),
         ),
       ),
     );
