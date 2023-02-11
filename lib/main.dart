@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/home/home_screen.dart';
+import 'package:fly_chatting_app/providers/agora_provider.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
+import 'package:fly_chatting_app/providers/chat_provider.dart';
 import 'package:fly_chatting_app/providers/contact_service_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
-import 'package:fly_chatting_app/screens/home_screen.dart';
-import 'package:fly_chatting_app/screens/splash_screen.dart';
+import 'package:fly_chatting_app/splash_welocome/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -29,9 +31,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ContactProvider(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => SearchProvider(contactProvider: context.read<ContactProvider>()),
-        // )
+        ChangeNotifierProvider(
+          create: (context) => CallProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChatProvider(),
+        ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, val, child) {

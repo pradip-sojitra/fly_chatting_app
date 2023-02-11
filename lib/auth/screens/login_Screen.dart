@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fly_chatting_app/auth/screens/phone_verification_screen.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
-import 'package:fly_chatting_app/screens/phone_verification_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
@@ -170,8 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
       );
     } else {
-      fullPhoneNumber =
-          '+${countryCode.toString()}${_phoneNumberController.text}';
+      fullPhoneNumber = '+${countryCode.toString()}${_phoneNumberController.text}';
       verifyPhoneNumber(phoneNumber: fullPhoneNumber.toString());
     }
   }

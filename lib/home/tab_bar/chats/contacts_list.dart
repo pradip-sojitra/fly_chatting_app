@@ -9,7 +9,7 @@
 // // import 'package:fly_chatting_app/models/user_model.dart';
 // // import 'package:fly_chatting_app/providers/contact_service_provider.dart';
 // // import 'package:fly_chatting_app/providers/search_provider.dart';
-// // import 'package:fly_chatting_app/screens/ChatScreen.dart';
+// // import 'package:fly_chatting_app/screens/message_screen.dart';
 // // import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 // // import 'package:permission_handler/permission_handler.dart';
 // // import 'package:provider/provider.dart';
@@ -306,7 +306,7 @@
 // import 'package:fly_chatting_app/models/user_model.dart';
 // import 'package:fly_chatting_app/providers/contact_service_provider.dart';
 // import 'package:fly_chatting_app/providers/search_provider.dart';
-// import 'package:fly_chatting_app/screens/ChatScreen.dart';
+// import 'package:fly_chatting_app/screens/message_screen.dart';
 // import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 // import 'package:permission_handler/permission_handler.dart';
 // import 'package:provider/provider.dart';
@@ -439,27 +439,24 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/models/chats_check_participant_model.dart';
-import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
+import 'package:fly_chatting_app/providers/chat_provider.dart';
 import 'package:fly_chatting_app/providers/contact_service_provider.dart';
-import 'package:fly_chatting_app/screens/ChatScreen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ChatContactScreen extends StatefulWidget {
-  const ChatContactScreen({Key? key}) : super(key: key);
+class ContactsList extends StatefulWidget {
+  const ContactsList({Key? key}) : super(key: key);
 
   @override
-  State<ChatContactScreen> createState() => _ChatContactScreenState();
+  State<ContactsList> createState() => _ContactsListState();
 }
 
-class _ChatContactScreenState extends State<ChatContactScreen> {
+class _ContactsListState extends State<ContactsList> {
   void getContactPermission() async {
     if (await Permission.contacts.isGranted) {
       await context.read<ContactProvider>().getPhoneContacts();
@@ -478,6 +475,12 @@ class _ChatContactScreenState extends State<ChatContactScreen> {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  void selectedContact(UserModel receiverData) {
+    context
+        .read<ChatProvider>()
+        .selectContact(context: context, receiverAllData: receiverData);
   }
 
   @override
@@ -615,29 +618,8 @@ class _ChatContactScreenState extends State<ChatContactScreen> {
                       return ListTile(
                         contentPadding:
                             const EdgeInsets.only(left: 18, right: 10),
-                        onTap: () async {
-                          final targetData = await FirebaseFirestore.instance
-                              .collection('users')
-                              .where('phoneNumber',
-                                  isEqualTo: contact.phoneNumber)
-                              .get();
-
-                          UserModel targetUser =
-                              UserModel.fromMap(targetData.docs.first.data());
-                          ChatCheckModel? chatCheck =
-                              await FirebaseData.getParticipantChat(targetUser);
-
-                          if (chatCheck != null) {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ChatScreen(
-                                  targetUser: targetUser,
-                                  chatCheck: chatCheck,
-                                ),
-                              ),
-                            );
-                          }
+                        onTap: () {
+                          selectedContact(contact);
                         },
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

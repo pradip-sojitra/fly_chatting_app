@@ -1,41 +1,47 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:equatable/equatable.dart';
 
 class UserModel extends Equatable {
-  String phoneNumber;
-  String uid;
-  String? profilePicture;
-  String? fullName;
-  String? about;
-
   UserModel({
-    required this.phoneNumber,
     required this.uid,
+    required this.phoneNumber,
+    required this.fullName,
     this.profilePicture,
-    this.fullName,
     this.about,
+    this.isOnline,
+    this.groupId,
   });
 
-  factory UserModel.fromMap(Map<String, dynamic> data) {
-    return UserModel(
-      phoneNumber: data['phoneNumber'],
-      uid: data['uid'],
-      profilePicture: data['profilePicture'],
-      fullName: data['fullName'],
-      about: data['about'],
-    );
-  }
+  String uid;
+  String phoneNumber;
+  String fullName;
+  String? profilePicture;
+  String? about;
+  bool? isOnline;
+  List<String>? groupId;
 
-  Map<String, dynamic> toMap() {
-    return {
-      'phoneNumber': phoneNumber,
-      'uid': uid,
-      'profilePicture': profilePicture,
-      'fullName': fullName,
-      'about': about,
-    };
-  }
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        uid: json["uid"],
+        phoneNumber: json["phoneNumber"],
+        fullName: json["fullName"],
+        profilePicture: json["profilePicture"],
+        about: json["about"],
+        isOnline: json["isOnline"],
+        groupId: List<String>.from(json["groupId"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "uid": uid,
+        "phoneNumber": phoneNumber,
+        "fullName": fullName,
+        "profilePicture": profilePicture,
+        "about": about,
+        "isOnline": isOnline,
+        "groupId": groupId,
+      };
 
   @override
-  // TODO: implement props
-  List<Object?> get props => [phoneNumber, fullName, uid, profilePicture, about];
+  // TODO: implement equatable
+  List<Object?> get props => [phoneNumber];
 }

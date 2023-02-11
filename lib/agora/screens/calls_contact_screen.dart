@@ -1,8 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/providers/agora_provider.dart';
+import 'package:fly_chatting_app/models/firebase_data.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/providers/contact_service_provider.dart';
-import 'package:fly_chatting_app/screens/video_call.dart';
+import 'package:fly_chatting_app/agora/screens/video_call.dart';
 import 'package:provider/provider.dart';
 
 class CallContactScreen extends StatefulWidget {
@@ -106,7 +111,7 @@ class _CallContactScreenState extends State<CallContactScreen> {
                       return ListTile(
                         contentPadding:
                             const EdgeInsets.only(left: 18, right: 10),
-                        onTap: () {},
+                        onTap: () async {},
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -141,10 +146,23 @@ class _CallContactScreenState extends State<CallContactScreen> {
                               padding: const EdgeInsets.only(right: 24),
                               child:
                                   const Icon(Icons.videocam_rounded, size: 27),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const VideoCall(),
-                                ));
+                              onPressed: () async {
+                                UserModel receiverData = UserModel(
+                                    phoneNumber: contact.phoneNumber,
+                                    uid: contact.uid,
+                                    fullName: contact.fullName,
+                                    profilePicture: contact.profilePicture,
+                                    about: contact.about);
+
+                                final userData = await FirebaseData.userData(
+                                    uid:
+                                        FirebaseAuth.instance.currentUser!.uid);
+
+                                context.read<CallProvider>().makeCall(
+                                    context, receiverData, userData!, false);
+                                // Navigator.of(context).push(MaterialPageRoute(
+                                //   builder: (context) => const VideoCall(),
+                                // ));
                               },
                             ),
                           ],

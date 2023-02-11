@@ -5,9 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/home/home_screen.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/screens/home_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_icon_button.dart';
 import 'package:fly_chatting_app/widgets/text_field.dart';
@@ -34,10 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-      ),
       body: Center(
         child: Form(
           child: Padding(
@@ -231,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userModel!.uid)
-        .set(widget.userModel!.toMap())
+        .set(widget.userModel!.toJson())
         .then((value) {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen(),), (route) => false);
     });

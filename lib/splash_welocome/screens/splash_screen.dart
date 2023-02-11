@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/providers/contact_service_provider.dart';
-import 'package:fly_chatting_app/screens/welcome_screen.dart';
+import 'package:fly_chatting_app/splash_welocome/screens/welcome_screen.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -20,15 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void splash() {
-    Timer(const Duration(seconds: 3), () {
-      Navigator.of(context).pushAndRemoveUntil(
+    Timer(const Duration(seconds: 3), () async {
+      await Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => const WelcomeScreen(),
           ),
           (route) => false);
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/screens/login_Screen.dart';
+import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 

@@ -4,10 +4,10 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/home/home_screen.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/screens/home_screen.dart';
-import 'package:fly_chatting_app/screens/profile_screen.dart';
+import 'package:fly_chatting_app/auth/screens/profile_screen.dart';
 import 'package:fly_chatting_app/widgets/cupertino_button.dart';
 import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
 import 'package:fly_chatting_app/widgets/pincode.dart';
@@ -119,7 +119,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
       if (checkUserData.docs.isNotEmpty) {
         final getUserdata = checkUserData.docs[0].data();
-        UserModel userModel = UserModel.fromMap(getUserdata);
+        UserModel userModel = UserModel.fromJson(getUserdata);
         setState(() {
           sharedPref.uid = userModel.uid.toString();
           sharedPref.fullName = userModel.fullName.toString();
@@ -143,12 +143,14 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             profilePicture: '',
             uid: uid,
             phoneNumber: widget.number,
-            about: '');
+            about: '',
+            groupId: [],
+            isOnline: true);
 
         await FirebaseFirestore.instance
             .collection('users')
             .doc(uid)
-            .set(newUserCreate.toMap())
+            .set(newUserCreate.toJson())
             .then((value) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(

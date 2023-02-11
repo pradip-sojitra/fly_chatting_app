@@ -1,17 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats/chat_list.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats/message_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/status/Status_home_page.dart';
+import 'package:fly_chatting_app/home/tab_bar/calls/calls_home_screen.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
-import 'package:fly_chatting_app/providers/contact_service_provider.dart';
+import 'package:fly_chatting_app/providers/chat_provider.dart';
 import 'package:fly_chatting_app/providers/theme_provider.dart';
-import 'package:fly_chatting_app/screens/Status_home_page.dart';
-import 'package:fly_chatting_app/screens/calls_home_screen.dart';
-import 'package:fly_chatting_app/screens/chat_home_page.dart';
-import 'package:fly_chatting_app/screens/chat_contacts_screen.dart';
-import 'package:fly_chatting_app/screens/login_Screen.dart';
 import 'package:provider/provider.dart';
 
 enum SampleItem { itemOne, itemSecond }
@@ -23,13 +23,36 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   SampleItem? selectedMenu;
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
     context.read<ThemeProvider>().getLocal();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        context.read<ChatProvider>().isOnlineChanged(true);
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+        context.read<ChatProvider>().isOnlineChanged(false);
+        break;
+    }
   }
 
   @override
@@ -149,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: const TabBarView(
           children: [
-            ChatHomePage(),
+            ChatList(),
             StatusHomePage(),
             CallsHomeScreen(),
           ],
