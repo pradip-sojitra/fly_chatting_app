@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats/chat_list.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats/message_screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/status/Status_home_page.dart';
 import 'package:fly_chatting_app/home/tab_bar/calls/calls_home_screen.dart';
 import 'package:fly_chatting_app/models/local_db.dart';
