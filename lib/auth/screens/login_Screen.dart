@@ -5,10 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fly_chatting_app/auth/screens/phone_verification_screen.dart';
-import 'package:fly_chatting_app/models/local_db.dart';
-import 'package:fly_chatting_app/widgets/cupertino_button.dart';
-import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
+import 'package:fly_chatting_app/common/widgets/cupertino_button.dart';
+import 'package:fly_chatting_app/common/widgets/messenger_scaffold.dart';
+import 'package:fly_chatting_app/common/widgets/theme/colors_style.dart';
+import 'package:fly_chatting_app/common/local_db/local_db.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

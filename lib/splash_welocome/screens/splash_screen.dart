@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/common/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/splash_welocome/screens/welcome_screen.dart';
-import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

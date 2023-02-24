@@ -1,16 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats/chat_list.dart';
-import 'package:fly_chatting_app/home/tab_bar/status/Status_home_page.dart';
-import 'package:fly_chatting_app/home/tab_bar/calls/calls_home_screen.dart';
-import 'package:fly_chatting_app/models/local_db.dart';
-import 'package:fly_chatting_app/providers/chat_provider.dart';
-import 'package:fly_chatting_app/providers/theme_provider.dart';
+import 'package:fly_chatting_app/common/provider/commom_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/calls_pages/screens/call_list_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/calls_pages/screens/contact_call_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/screens/chat_list_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/screens/contact_chat_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/status_pages/screens/status_contacts_screen.dart';
+import 'package:fly_chatting_app/common/local_db/local_db.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/common/provider/theme_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/status_pages/screens/confirm_status_screen.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 enum SampleItem { itemOne, itemSecond }
@@ -22,21 +27,25 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   SampleItem? selectedMenu;
-  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
+
     context.read<ThemeProvider>().getLocal();
     WidgetsBinding.instance.addObserver(this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    _tabController?.dispose();
   }
 
   @override
@@ -138,13 +147,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ],
             ),
           ],
-          bottom: const TabBar(
+          bottom: TabBar(
+            controller: _tabController,
             indicatorWeight: 3,
-            labelPadding: EdgeInsets.symmetric(vertical: 12),
+            labelPadding: const EdgeInsets.symmetric(vertical: 12),
             unselectedLabelColor: Colors.white70,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            tabs: [
+            tabs: const [
               Text(
                 'Chats',
                 style: TextStyle(
@@ -169,12 +179,48 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ),
-        body: const TabBarView(
-          children: [
-            ChatList(),
-            StatusHomePage(),
+        body: TabBarView(
+          controller: _tabController,
+          children: const [
+            ChatListScreen(),
+            StatusContactsScreen(),
             CallsHomeScreen(),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          onPressed: () async {
+            if (_tabController?.index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ContactChatScreen(),
+                ),
+              );
+            } else if (_tabController?.index == 1) {
+              File? pickedImage = await context
+                  .read<CommonFirebaseStorageProvider>()
+                  .selectedImage(context, ImageSource.gallery);
+              if (pickedImage != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ConfirmStatusScreen(file: pickedImage),
+                  ),
+                );
+              }
+            } else if (_tabController?.index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ContactCallScreen(),
+                ),
+              );
+            }
+          },
+          child: _tabController?.index == 0
+              ? const Icon(Icons.chat)
+              : _tabController?.index == 1
+                  ? const Icon(Icons.camera)
+                  : const Icon(Icons.add_ic_call_rounded),
         ),
       ),
     );

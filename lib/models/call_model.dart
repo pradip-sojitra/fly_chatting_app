@@ -6,18 +6,18 @@ class CallModel {
     required this.receiverId,
     required this.receiverName,
     required this.receiverPic,
-    required this.callId,
-    required this.hasDialled,
+    required this.channelId,
+    this.hasDialled,
   });
 
-  final String callerId;
-  final String callerName;
-  final String callerPic;
-  final String receiverId;
-  final String receiverName;
-  final String receiverPic;
-  final String callId;
-  final bool hasDialled;
+  String callerId;
+  String callerName;
+  String callerPic;
+  String receiverId;
+  String receiverName;
+  String receiverPic;
+  String channelId;
+  bool? hasDialled;
 
   factory CallModel.fromJson(Map<String, dynamic> json) => CallModel(
         callerId: json["callerId"],
@@ -26,7 +26,7 @@ class CallModel {
         receiverId: json["receiverId"],
         receiverName: json["receiverName"],
         receiverPic: json["receiverPic"],
-        callId: json["callId"],
+        channelId: json["channelId"],
         hasDialled: json["hasDialled"],
       );
 
@@ -37,7 +37,7 @@ class CallModel {
         "receiverId": receiverId,
         "receiverName": receiverName,
         "receiverPic": receiverPic,
-        "callId": callId,
+        "channelId": channelId,
         "hasDialled": hasDialled,
       };
 }

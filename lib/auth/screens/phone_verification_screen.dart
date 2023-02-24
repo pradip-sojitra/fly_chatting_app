@@ -4,15 +4,15 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fly_chatting_app/common/widgets/cupertino_button.dart';
+import 'package:fly_chatting_app/common/widgets/cupertino_text_button.dart';
+import 'package:fly_chatting_app/common/widgets/messenger_scaffold.dart';
+import 'package:fly_chatting_app/common/widgets/pincode.dart';
+import 'package:fly_chatting_app/common/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/home/home_screen.dart';
-import 'package:fly_chatting_app/models/local_db.dart';
+import 'package:fly_chatting_app/common/local_db/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/auth/screens/profile_screen.dart';
-import 'package:fly_chatting_app/widgets/cupertino_button.dart';
-import 'package:fly_chatting_app/widgets/cupertino_text_button.dart';
-import 'package:fly_chatting_app/widgets/pincode.dart';
-import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
-import 'package:fly_chatting_app/widgets/messenger_scaffold.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
   const PhoneVerificationScreen({

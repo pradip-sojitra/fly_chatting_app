@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
-import 'package:fly_chatting_app/widgets/cupertino_button.dart';
-import 'package:fly_chatting_app/widgets/theme/colors_style.dart';
+import 'package:fly_chatting_app/common/widgets/cupertino_button.dart';
+import 'package:fly_chatting_app/common/widgets/theme/colors_style.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/contact_service_provider.dart';
+import 'package:provider/provider.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -54,12 +56,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: BuildCupertinoButton(
-                            onPressed: () {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()),
-                                  (route) => false);
+                            onPressed: () async {
+                              await context
+                                  .read<ContactProvider>()
+                                  .getPhoneInvite()
+                                  .then((value) => Navigator.of(context)
+                                      .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const LoginScreen()),
+                                          (route) => false));
                             },
                             title: "Get Started"),
                       ),
