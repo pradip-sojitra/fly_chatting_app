@@ -1,12 +1,15 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fly_chatting_app/common/local_db/local_db.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 
 class ContactProvider with ChangeNotifier {
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   TextEditingController searchController = TextEditingController();
   List<UserModel?> contactFiltered = [];
   List<UserModel> fireContacts = [];
@@ -17,12 +20,69 @@ class ContactProvider with ChangeNotifier {
   List<UserModel?> phoneContact = [];
   List<Contact> contacts = [];
 
-  Future<List<Contact>> getPhoneContacts() async {
-    final allContactsInThePhone =
-        await ContactsService.getContacts(withThumbnails: false);
-    contacts = allContactsInThePhone;
-    return allContactsInThePhone;
+  Future<List<List<UserModel>>> getAllContacts() async {
+    List<UserModel> firebaseContacts = [];
+    List<UserModel> phoneContacts = [];
+
+    try {
+      if (await FlutterContacts.requestPermission()) {
+        final userCollection = await fireStore.collection('users').get();
+        List<Contact> allContactsInThePhone =
+            await FlutterContacts.getContacts(withProperties: true);
+        List<UserModel?> contact =
+            allContactsInThePhone.map((e) => convertContactModel(e)).toList();
+        contact.removeWhere((element) => element == null);
+
+        bool isContactFound = false;
+
+        for (var contact in contact) {
+          for (var firebaseContactData in userCollection.docs) {
+            var firebaseContact =
+                UserModel.fromJson(firebaseContactData.data());
+
+            if (contact!.phoneNumber
+                    .replaceAll(' ', '')
+                    .replaceAll('-', '')
+                    .replaceAll('+91', '') ==
+                firebaseContact.phoneNumber) {
+              firebaseContacts.add(firebaseContact);
+              firebaseContacts.removeWhere(
+                  (element) => element.uid == auth.currentUser!.uid);
+              isContactFound = true;
+              break;
+            }
+          }
+          if (!isContactFound) {
+            phoneContacts.add(
+              UserModel(
+                  fullName: contact!.fullName,
+                  uid: '',
+                  phoneNumber: contact.phoneNumber),
+            );
+          }
+
+          isContactFound = false;
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return [firebaseContacts, phoneContacts];
   }
+
+  UserModel? convertContactModel(Contact contact) {
+    try {
+      return UserModel(
+        uid: '',
+        phoneNumber: contact.phones[0].number,
+        fullName: contact.displayName,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+
 
   Future<List<UserModel>> getFirebaseContacts() async {
     final usersData =
@@ -59,18 +119,6 @@ class ContactProvider with ChangeNotifier {
     final temp = contacts.map((e) => convertContactModel(e)).toList();
     temp.removeWhere((element) => element == null);
     return temp;
-  }
-
-  UserModel? convertContactModel(Contact contact) {
-    try {
-      return UserModel(
-        uid: '',
-        phoneNumber: contact.phones!.first.value ?? 'Invalid Phone',
-        fullName: contact.displayName ?? 'User',
-      );
-    } catch (e) {
-      return null;
-    }
   }
 
   void clearSearch() {

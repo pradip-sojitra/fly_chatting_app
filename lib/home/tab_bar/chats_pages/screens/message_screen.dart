@@ -259,7 +259,7 @@ class _MessageScreenState extends State<MessageScreen> {
                   }),
             ),
             Padding(
-                padding: const EdgeInsets.only(bottom: 6, right: 6, left: 6),
+                padding: const EdgeInsets.only(right: 6, left: 6),
                 child: BottomTextField(receiverId: widget.receiverId)),
           ],
         ),

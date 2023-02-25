@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fly_chatting_app/common/provider/commom_provider.dart';
 import 'package:fly_chatting_app/common/widgets/messenger_scaffold.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
@@ -31,8 +32,20 @@ class StatusProvider extends ChangeNotifier {
           .read<CommonFirebaseStorageProvider>()
           .storeFileToFirebase('status/$statusId${userData!.uid}', file);
 
-      List<UserModel?> contacts =
-          await context.read<ContactProvider>().getPhoneInvite();
+      List<UserModel?> contacts = [];
+
+      if (await FlutterContacts.requestPermission()) {
+        List<Contact> allContactsInThePhone =
+            await FlutterContacts.getContacts(withProperties: true);
+
+        List<UserModel?> contact = allContactsInThePhone
+            .map((e) => context.read<ContactProvider>().convertContactModel(e))
+            .toList();
+
+        contact.removeWhere((element) => element == null);
+
+        contacts = contact;
+      }
 
       List<String> uidWhoCanSee = [];
 
@@ -105,8 +118,20 @@ class StatusProvider extends ChangeNotifier {
     List<StatusModel> statusData = [];
 
     try {
-      List<UserModel?> contacts =
-          await context.read<ContactProvider>().getPhoneInvite();
+      List<UserModel?> contacts = [];
+
+      if (await FlutterContacts.requestPermission()) {
+        List<Contact> allContactsInThePhone =
+            await FlutterContacts.getContacts(withProperties: true);
+
+        List<UserModel?> contact = allContactsInThePhone
+            .map((e) => context.read<ContactProvider>().convertContactModel(e))
+            .toList();
+
+        contact.removeWhere((element) => element == null);
+
+        contacts = contact;
+      }
 
       for (var contact in contacts) {
         var statusSnapshot = await fireStore

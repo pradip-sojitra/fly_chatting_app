@@ -54,9 +54,12 @@ class MyApp extends StatelessWidget {
                 ? ThemeData.dark().copyWith(
                     floatingActionButtonTheme:
                         const FloatingActionButtonThemeData(
-                            backgroundColor: Colors.blue),
-                  )
-                : ThemeData.light(),
+                            backgroundColor: Colors.blue))
+                : ThemeData.light().copyWith(
+                    appBarTheme: const AppBarTheme(
+                        systemOverlayStyle: SystemUiOverlayStyle(
+                            statusBarColor: Colors.blue,
+                            systemNavigationBarColor: Colors.white))),
             debugShowCheckedModeBanner: false,
             home: const MainScreen(),
           );

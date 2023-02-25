@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/home/tab_bar/status_pages/provider/status_provider.dart';
 import 'package:fly_chatting_app/models/status_model.dart';
-import 'package:fly_chatting_app/splash_welocome/screens/status_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/status_pages/screens/status_screen.dart';
 import 'package:provider/provider.dart';
 
 class StatusContactsScreen extends StatelessWidget {
