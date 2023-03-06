@@ -5,9 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:fly_chatting_app/common/provider/commom_provider.dart';
+import 'package:fly_chatting_app/common/utils.dart';
 import 'package:fly_chatting_app/common/widgets/messenger_scaffold.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/contact_service_provider.dart';
 import 'package:fly_chatting_app/models/status_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
@@ -28,9 +28,8 @@ class StatusProvider extends ChangeNotifier {
           .userData(uid: auth.currentUser!.uid);
       final String statusId = const Uuid().v1();
 
-      String imageUrl = await context
-          .read<CommonFirebaseStorageProvider>()
-          .storeFileToFirebase('status/$statusId${userData!.uid}', file);
+      String imageUrl =
+          await storeFileToFirebase('status/$statusId${userData!.uid}', file);
 
       List<UserModel?> contacts = [];
 

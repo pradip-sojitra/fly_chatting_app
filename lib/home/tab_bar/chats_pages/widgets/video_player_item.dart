@@ -21,13 +21,15 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   void initState() {
     super.initState();
     videoController = CachedVideoPlayerController.network(widget.messages.text)
-      ..initialize();
-    videoController.setVolume(1);
+      ..initialize().then((value) {
+        videoController.setVolume(1);
+        setState(() {});
+      });
   }
 
   @override
-  void deactivate() {
-    super.deactivate();
+  void dispose() {
+    super.dispose();
     videoController.dispose();
   }
 
@@ -36,11 +38,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     bool checkData =
         widget.messages.senderId == FirebaseAuth.instance.currentUser!.uid;
     return AspectRatio(
-      aspectRatio: 16 / 20,
+      aspectRatio: videoController.value.aspectRatio,
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             child: CachedVideoPlayer(videoController),
           ),
           Align(
@@ -72,7 +74,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   const BorderRadius.only(topLeft: Radius.circular(12)),
               child: Container(
                 padding: const EdgeInsets.only(left: 12, right: 8, top: 8),
-                color: checkData ? Colors.grey.shade300 : Colors.white,
+                color: checkData ? Colors.blue.shade100 : Colors.grey.shade300,
                 child: Text(
                   DateFormat.jm().format(
                     widget.messages.time.toDate(),

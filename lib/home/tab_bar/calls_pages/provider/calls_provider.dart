@@ -48,6 +48,7 @@ class CallProvider extends ChangeNotifier {
       required UserModel receiver,
       required BuildContext context}) async {
     final String channelId = const Uuid().v4();
+
     CallModel call = CallModel(
       callerId: sender.uid,
       callerName: sender.fullName,

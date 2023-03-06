@@ -1,19 +1,22 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fly_chatting_app/common/provider/commom_provider.dart';
+import 'package:fly_chatting_app/common/utils.dart';
 import 'package:fly_chatting_app/models/message_enum.dart';
-import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class BottomTextField extends StatefulWidget {
-  const BottomTextField({Key? key, required this.receiverId}) : super(key: key);
+  const BottomTextField({
+    Key? key,
+    required this.receiverId,
+    required this.isGroupChat,
+  }) : super(key: key);
+
   final String receiverId;
+  final bool isGroupChat;
 
   @override
   State<BottomTextField> createState() => _BottomTextFieldState();
@@ -31,29 +34,27 @@ class _BottomTextFieldState extends State<BottomTextField> {
   bool isShowSendButton = false;
 
   void selectImage() async {
-    File? image = await context
-        .read<CommonFirebaseStorageProvider>()
-        .selectedImage(context, ImageSource.gallery);
+    File? image = await selectedImage(context, ImageSource.gallery);
     if (image != null) {
-      sendFileMessage(file: image,messageEnum: MessageEnum.image);
+      sendFileMessage(file: image, messageEnum: MessageEnum.image);
     }
   }
 
   void selectVideo() async {
-    File? video = await context
-        .read<CommonFirebaseStorageProvider>()
-        .selectedVideo(context, ImageSource.gallery);
+    File? video = await selectedVideo(context, ImageSource.gallery);
     if (video != null) {
-      sendFileMessage(file: video,messageEnum: MessageEnum.video);
+      sendFileMessage(file: video, messageEnum: MessageEnum.video);
     }
   }
 
   void sendFileMessage({required File file, required MessageEnum messageEnum}) {
     context.read<ChatProvider>().sendFileMessage(
-        context: context,
-        file: file,
-        receiverId: widget.receiverId,
-        messageEnum: messageEnum);
+          context: context,
+          file: file,
+          receiverId: widget.receiverId,
+          messageEnum: messageEnum,
+          isGroupChat: widget.isGroupChat,
+        );
   }
 
   void messageSend() {
@@ -62,7 +63,8 @@ class _BottomTextFieldState extends State<BottomTextField> {
         context.read<ChatProvider>().sendTextMessage(
             context: context,
             text: messageController.text.trim(),
-            receiverId: widget.receiverId);
+            receiverId: widget.receiverId,
+            isGroupChat: widget.isGroupChat);
         setState(() {
           messageController.text = '';
         });

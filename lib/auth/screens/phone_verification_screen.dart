@@ -139,13 +139,14 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         // log('---------------------------------------------------${userModel.fullName}-------------------------------------------------------');
       } else {
         UserModel newUserCreate = UserModel(
-            fullName: '',
-            profilePicture: '',
-            uid: uid,
-            phoneNumber: widget.number,
-            about: '',
-            groupId: [],
-            isOnline: true);
+          fullName: '',
+          profilePicture: '',
+          uid: uid,
+          phoneNumber: widget.number,
+          about: '',
+          active: true,
+          isSeen: DateTime.now().millisecondsSinceEpoch
+        );
 
         await FirebaseFirestore.instance
             .collection('users')

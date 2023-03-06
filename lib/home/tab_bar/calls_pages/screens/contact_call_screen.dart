@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/home/tab_bar/calls_pages/provider/calls_provider.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:fly_chatting_app/models/call_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/contact_service_provider.dart';
@@ -92,11 +92,13 @@ class _ContactCallScreenState extends State<ContactCallScreen> {
                   fillColor: Colors.grey.withOpacity(.06)),
             ),
           ),
-          FutureBuilder<List<UserModel>>(
-            future: context.watch<ContactProvider>().getFirebaseContacts(),
-            builder: (context, AsyncSnapshot<List<UserModel>> snapshot) {
+          FutureBuilder(
+            future: context.read<ContactProvider>().getFirebaseContacts(),
+            builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               } else {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -110,7 +112,6 @@ class _ContactCallScreenState extends State<ContactCallScreen> {
                           // isSearching == true ? fireContacts[index] :
                           snapshot.data![index];
 
-
                       return ListTile(
                         contentPadding:
                             const EdgeInsets.only(left: 18, right: 10),
@@ -118,7 +119,7 @@ class _ContactCallScreenState extends State<ContactCallScreen> {
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(contact.fullName.toString(),
+                            Text(contact!.fullName,
                                 style: const TextStyle(
                                     fontFamily: 'Rounded ExtraBold')),
                             Text(
@@ -143,8 +144,7 @@ class _ContactCallScreenState extends State<ContactCallScreen> {
                             CupertinoButton(
                               padding: const EdgeInsets.only(right: 20),
                               child: const Icon(Icons.call),
-                              onPressed: ()async {
-                              },
+                              onPressed: () async {},
                             ),
                             CupertinoButton(
                               padding: const EdgeInsets.only(right: 24),

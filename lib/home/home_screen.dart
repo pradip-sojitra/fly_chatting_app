@@ -5,20 +5,19 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/auth/screens/login_Screen.dart';
-import 'package:fly_chatting_app/common/provider/commom_provider.dart';
+import 'package:fly_chatting_app/common/utils.dart';
 import 'package:fly_chatting_app/home/tab_bar/calls_pages/screens/call_list_screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/calls_pages/screens/contact_call_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/group_chats/screens/create_group_screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/screens/chat_list_screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/screens/contact_chat_screen.dart';
 import 'package:fly_chatting_app/home/tab_bar/status_pages/screens/status_contacts_screen.dart';
 import 'package:fly_chatting_app/common/local_db/local_db.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:fly_chatting_app/common/provider/theme_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/status_pages/screens/confirm_status_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-enum SampleItem { itemOne, itemSecond }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +28,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  SampleItem? selectedMenu;
   TabController? _tabController;
 
   @override
@@ -53,12 +51,16 @@ class _HomeScreenState extends State<HomeScreen>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        context.read<ChatProvider>().isOnlineChanged(true);
+        context
+            .read<ChatProvider>()
+            .isOnlineChanged(true, DateTime.now().millisecondsSinceEpoch);
         break;
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
       case AppLifecycleState.inactive:
-        context.read<ChatProvider>().isOnlineChanged(false);
+        context
+            .read<ChatProvider>()
+            .isOnlineChanged(false, DateTime.now().millisecondsSinceEpoch);
         break;
     }
   }
@@ -116,18 +118,22 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             PopupMenuButton(
-              initialValue: selectedMenu,
-              onSelected: (SampleItem item) {
-                setState(() {
-                  selectedMenu = item;
-                });
-              },
               iconSize: 28,
               itemBuilder: (BuildContext context) => [
                 PopupMenuItem(
                   onTap: () {},
-                  value: SampleItem.itemOne,
                   child: const Text('Profile'),
+                ),
+                PopupMenuItem(
+                  onTap: () => Future(
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateGroupScreen(),
+                      ),
+                    ),
+                  ),
+                  child: const Text('Create Group'),
                 ),
                 PopupMenuItem(
                   onTap: () async {
@@ -141,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     });
                   },
-                  value: SampleItem.itemSecond,
                   child: const Text('Log Out'),
                 ),
               ],
@@ -197,9 +202,8 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               );
             } else if (_tabController?.index == 1) {
-              File? pickedImage = await context
-                  .read<CommonFirebaseStorageProvider>()
-                  .selectedImage(context, ImageSource.gallery);
+              File? pickedImage =
+                  await selectedImage(context, ImageSource.gallery);
               if (pickedImage != null) {
                 Navigator.of(context).push(
                   MaterialPageRoute(

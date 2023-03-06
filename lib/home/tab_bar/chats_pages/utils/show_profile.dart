@@ -4,7 +4,8 @@ import 'package:fly_chatting_app/common/widgets/theme/colors_style.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/screens/message_screen.dart';
 import 'package:fly_chatting_app/models/chat_list_model.dart';
 
-void showProfileSmall({required BuildContext context,required ChatListModel chatList}) {
+void showProfileSmall(
+    {required BuildContext context, required ChatListModel chatList}) {
   showDialog(
     context: context,
     builder: (context) {
@@ -54,13 +55,18 @@ void showProfileSmall({required BuildContext context,required ChatListModel chat
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) {
-                        return MessageScreen(
-                          receiverId: chatList.id,
-                        );
-                      },
-                    ));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return MessageScreen(
+                            receiverId: chatList.id,
+                            isGroupChat: false,
+                            name: chatList.name,
+                            photo: chatList.profilePic,
+                          );
+                        },
+                      ),
+                    );
                   },
                 ),
                 CupertinoButton(

@@ -55,12 +55,12 @@ class ContactProvider with ChangeNotifier {
           if (!isContactFound) {
             phoneContacts.add(
               UserModel(
-                  fullName: contact!.fullName,
-                  uid: '',
-                  phoneNumber: contact.phoneNumber),
+                fullName: contact!.fullName,
+                uid: '',
+                phoneNumber: contact.phoneNumber,
+              ),
             );
           }
-
           isContactFound = false;
         }
       }
@@ -68,6 +68,55 @@ class ContactProvider with ChangeNotifier {
       log(e.toString());
     }
     return [firebaseContacts, phoneContacts];
+  }
+
+  Future<List<UserModel?>> getPhoneContacts() async {
+    List<UserModel?> contacts = [];
+    try {
+      if (await FlutterContacts.requestPermission()) {
+        List<Contact> allContactsInThePhone =
+            await FlutterContacts.getContacts(withProperties: true);
+        List<UserModel?> contact =
+            allContactsInThePhone.map((e) => convertContactModel(e)).toList();
+        contact.removeWhere((element) => element == null);
+        contacts = contact;
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return contacts;
+  }
+
+  Future<List<UserModel?>> getFirebaseContacts() async {
+    List<UserModel?> firebaseContacts = [];
+    try {
+      if (await FlutterContacts.requestPermission()) {
+        final userCollection = await fireStore.collection('users').get();
+        List<Contact> allContactsInThePhone =
+            await FlutterContacts.getContacts(withProperties: true);
+        List<UserModel?> contacts =
+            allContactsInThePhone.map((e) => convertContactModel(e)).toList();
+        contacts.removeWhere((element) => element == null);
+
+        for (var contact in contacts) {
+          for (var firebaseContactData in userCollection.docs) {
+            var firebaseContact =
+                UserModel.fromJson(firebaseContactData.data());
+
+            if (contact!.phoneNumber
+                    .replaceAll(' ', '')
+                    .replaceAll('-', '')
+                    .replaceAll('+91', '') ==
+                firebaseContact.phoneNumber) {
+              firebaseContacts.add(firebaseContact);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return firebaseContacts;
   }
 
   UserModel? convertContactModel(Contact contact) {
@@ -80,45 +129,6 @@ class ContactProvider with ChangeNotifier {
     } catch (e) {
       return null;
     }
-  }
-
-
-
-  Future<List<UserModel>> getFirebaseContacts() async {
-    final usersData =
-        await FirebaseFirestore.instance.collection('users').get();
-
-    firebaseContact = usersData.docs
-        .map(
-          (e) => UserModel(
-            uid: e.id,
-            fullName: e.data()['fullName'],
-            profilePicture: e.data()['profilePicture'],
-            phoneNumber: e.data()['phoneNumber'],
-            about: e.data()['about'],
-          ),
-        )
-        .toList();
-    firebaseContact.removeWhere((element) => element.uid == sharedPref.uid);
-    return firebaseContact;
-  }
-
-  Future<List<UserModel?>> getPhoneInvite() async {
-    final temp = contacts.map((e) => convertContactModel(e)).toList();
-
-    // for (var value in firebaseContact) {
-    //   temp.remove(value);
-    // }
-
-    temp.removeWhere((element) => element == null);
-    phoneContact = temp;
-    return temp;
-  }
-
-  Future<List<UserModel?>> phoneContactsAll() async {
-    final temp = contacts.map((e) => convertContactModel(e)).toList();
-    temp.removeWhere((element) => element == null);
-    return temp;
   }
 
   void clearSearch() {
@@ -156,12 +166,3 @@ class ContactProvider with ChangeNotifier {
     }
   }
 }
-
-// String? cleanPhone(String number) {
-//   final cleaned =
-//       number.replaceAll(" ", '').replaceAll("+91", '').replaceAll("-", "");
-//   if (cleaned.length == 10) {
-//     return cleaned;
-//   }
-//   return null;
-// }

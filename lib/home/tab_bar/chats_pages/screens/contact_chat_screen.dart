@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/common/widgets/cupertino_text_button.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/contact_service_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -327,7 +327,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fly_chatting_app/common/widgets/cupertino_text_button.dart';
-import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_&_message_provider.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/group_chats/screens/create_group_screen.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/contact_service_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/utils/show_profile.dart';
 import 'package:fly_chatting_app/models/chat_list_model.dart';
@@ -364,220 +365,285 @@ class ContactChatScreen extends StatelessWidget {
         context.watch<ContactProvider>().searchController.text.isNotEmpty;
     print('Build ContactScreen');
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          automaticallyImplyLeading: false,
-          leading: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 26,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+      appBar: AppBar(
+        elevation: 0.0,
+        automaticallyImplyLeading: false,
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 26,
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Select Contact',
-                style: TextStyle(fontFamily: "Rounded Bold", fontSize: 18),
-              ),
-              FutureBuilder(
-                  future: context.read<ContactProvider>().getAllContacts(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Text(
-                        "counting...",
-                        style:
-                            TextStyle(fontSize: 13, fontFamily: "Rounded Bold"),
-                      );
-                    }
-                    return Text(
-                      "${snapshot.data![0].length + snapshot.data![1].length} Contacts",
-                      style: const TextStyle(
-                          fontSize: 13, fontFamily: "Rounded Bold"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Select Contact',
+              style: TextStyle(fontFamily: "Rounded Bold", fontSize: 18),
+            ),
+            FutureBuilder(
+                future: context.read<ContactProvider>().getAllContacts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text(
+                      "counting...",
+                      style:
+                          TextStyle(fontSize: 13, fontFamily: "Rounded Bold"),
                     );
-                  })
-            ],
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.read<ContactProvider>().searchAlwaysChange();
-              },
-              icon: const Image(
-                image: AssetImage('assets/icons/search.png'),
-                height: 20,
-              ),
-            ),
-            const SizedBox(width: 10),
+                  }
+                  return Text(
+                    "${snapshot.data![0].length + snapshot.data![1].length} Contacts",
+                    style: const TextStyle(
+                        fontSize: 13, fontFamily: "Rounded Bold"),
+                  );
+                })
           ],
         ),
-        body: FutureBuilder(
-          future: context.read<ContactProvider>().getAllContacts(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: snapshot.data![0].length + snapshot.data![1].length,
-              itemBuilder: (context, index) {
-                late UserModel firebaseContacts;
-                late UserModel phoneContacts;
-
-                if (index < snapshot.data![0].length) {
-                  firebaseContacts = snapshot.data![0][index];
-                } else {
-                  phoneContacts =
-                      snapshot.data![1][index - snapshot.data![0].length];
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<ContactProvider>().searchAlwaysChange();
+            },
+            icon: const Image(
+              image: AssetImage('assets/icons/search.png'),
+              height: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: context.read<ContactProvider>().getAllContacts(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                return index < snapshot.data![0].length
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (index == 0)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Text(
-                                'Contacts on FlyChat',
-                                style: TextStyle(
-                                    fontFamily: 'Rounded Black',
-                                    fontSize: 16,
-                                    color: Colors.blue),
-                              ),
-                            ),
-                          ListTile(
-                            contentPadding:
-                                const EdgeInsets.only(left: 18, right: 10),
-                            onTap: () {
-                              selectedContact(
-                                  context: context,
-                                  receiverData: firebaseContacts);
-                            },
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(firebaseContacts.fullName,
-                                    style: const TextStyle(
-                                        fontFamily: 'Rounded ExtraBold')),
-                                Text(
-                                  firebaseContacts.about.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black54,
-                                      fontFamily: 'Rounded ExtraBold'),
-                                )
-                              ],
-                            ),
-                            leading: CupertinoButton(
-                              onPressed: () async {
-                                var receiverDataFireStore =
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(FirebaseAuth
-                                            .instance.currentUser!.uid)
-                                        .collection('chats')
-                                        .doc(firebaseContacts.uid)
-                                        .get();
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount:
+                      snapshot.data![0].length + snapshot.data![1].length,
+                  itemBuilder: (context, index) {
+                    late UserModel firebaseContacts;
+                    late UserModel phoneContacts;
 
-                                ChatListModel receiverData =
-                                    ChatListModel.fromJson(
-                                        receiverDataFireStore.data()!);
-
-                                showProfileSmall(
-                                    context: context, chatList: receiverData);
-                              },
-                              padding: EdgeInsets.zero,
-                              child: CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.grey.withOpacity(.40),
-                                backgroundImage:
-                                    firebaseContacts.profilePicture != null
-                                        ? NetworkImage(firebaseContacts
-                                            .profilePicture
-                                            .toString())
-                                        : null,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (index == snapshot.data![0].length)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Text(
-                                'Invite to FlyChat',
-                                style: TextStyle(
-                                    fontFamily: 'Rounded Black',
-                                    fontSize: 16,
-                                    color: Colors.blue),
-                              ),
-                            ),
-                          ListTile(
-                            contentPadding:
-                                const EdgeInsets.only(left: 18, right: 10),
-                            onTap: () {
-                              String phoneNumber = phoneContacts.phoneNumber;
-                              _launchURL(phoneNumber: phoneNumber);
-                            },
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(phoneContacts.fullName,
-                                    style: const TextStyle(
-                                      fontFamily: 'Rounded ExtraBold',
-                                      fontSize: 15,
-                                    )),
-                                Text(
-                                  phoneContacts.phoneNumber,
-                                  style: const TextStyle(
-                                      fontSize: 13.5,
-                                      color: Colors.black54,
-                                      fontFamily: 'Rounded Bold'),
+                    if (index < snapshot.data![0].length) {
+                      firebaseContacts = snapshot.data![0][index];
+                    } else {
+                      phoneContacts =
+                          snapshot.data![1][index - snapshot.data![0].length];
+                    }
+                    return index < snapshot.data![0].length
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (index == 0)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CupertinoButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const CreateGroupScreen(),
+                                        ),
+                                      ),
+                                      child: myListTile(leading: Icons.group, text: "New Group"),
+                                    ),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {},
+                                      child: myListTile(leading: Icons.contacts, text: "New Contact"),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      child: Text(
+                                        'Contacts on FlyChat',
+                                        style: TextStyle(
+                                            fontFamily: 'Rounded Black',
+                                            fontSize: 16,
+                                            color: Colors.blue),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 5)
-                              ],
-                            ),
-                            leading: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: Colors.grey.withOpacity(.30),
-                              child: Image.asset(
-                                'assets/icons/person_2.png',
-                                height: 32,
-                                color: Colors.white70,
+                              CupertinoButton(
+                                onPressed: () => selectedContact(
+                                    context: context,
+                                    receiverData: firebaseContacts),
+                                padding: EdgeInsets.zero,
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.only(
+                                      left: 18, right: 10),
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(firebaseContacts.fullName,
+                                          style: const TextStyle(
+                                              fontFamily: 'Rounded ExtraBold')),
+                                      Text(
+                                        firebaseContacts.about.toString(),
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black54,
+                                            fontFamily: 'Rounded ExtraBold'),
+                                      )
+                                    ],
+                                  ),
+                                  leading: CupertinoButton(
+                                    onPressed: () async {
+                                      var receiverDataFireStore =
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(FirebaseAuth
+                                                  .instance.currentUser!.uid)
+                                              .collection('chats')
+                                              .doc(firebaseContacts.uid)
+                                              .get();
+
+                                      ChatListModel receiverData =
+                                          ChatListModel.fromJson(
+                                              receiverDataFireStore.data()!);
+
+                                      showProfileSmall(
+                                          context: context,
+                                          chatList: receiverData);
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    child: CircleAvatar(
+                                      radius: 22,
+                                      backgroundColor:
+                                          Colors.grey.withOpacity(.40),
+                                      backgroundImage:
+                                          firebaseContacts.profilePicture !=
+                                                  null
+                                              ? NetworkImage(firebaseContacts
+                                                  .profilePicture
+                                                  .toString())
+                                              : null,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            trailing: BuildCupertinoButtonText(
-                              onPressed: () {
-                                String phoneNumber =
-                                    phoneContacts.phoneNumber.toString();
-                                _launchURL(phoneNumber: phoneNumber);
-                              },
-                              title: 'Invite',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  letterSpacing: 0.8,
-                                  color:Colors.blue,
-                                  fontFamily: "Varela Round Regular"),
-                            ),
-                          ),
-                        ],
-                      );
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (index == snapshot.data![0].length)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: Text(
+                                    'Invite to FlyChat',
+                                    style: TextStyle(
+                                        fontFamily: 'Rounded Black',
+                                        fontSize: 16,
+                                        color: Colors.blue),
+                                  ),
+                                ),
+                              CupertinoButton(
+                                onPressed: () {
+                                  String phoneNumber =
+                                      phoneContacts.phoneNumber;
+                                  _launchURL(phoneNumber: phoneNumber);
+                                },
+                                padding: EdgeInsets.zero,
+                                child: ListTile(
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 18, right: 10),
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(phoneContacts.fullName,
+                                          style: const TextStyle(
+                                            fontFamily: 'Rounded ExtraBold',
+                                            fontSize: 15,
+                                          )),
+                                      Text(
+                                        phoneContacts.phoneNumber,
+                                        style: const TextStyle(
+                                            fontSize: 13.5,
+                                            color: Colors.black54,
+                                            fontFamily: 'Rounded Bold'),
+                                      ),
+                                      const SizedBox(height: 5)
+                                    ],
+                                  ),
+                                  leading: CircleAvatar(
+                                    radius: 22,
+                                    backgroundColor: Colors.grey.withOpacity(.30),
+                                    child: Image.asset(
+                                      'assets/icons/person_2.png',
+                                      height: 32,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  trailing: BuildCupertinoButtonText(
+                                    onPressed: () {
+                                      String phoneNumber =
+                                          phoneContacts.phoneNumber.toString();
+                                      _launchURL(phoneNumber: phoneNumber);
+                                    },
+                                    title: 'Invite',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      letterSpacing: 0.8,
+                                      color: Colors.blue,
+                                      fontFamily: "Varela Round Regular",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                  },
+                );
               },
-            );
-          },
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ListTile myListTile({
+    required IconData leading,
+    required String text,
+    IconData? trailing,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.only(top: 10, left: 20, right: 10),
+      leading: CircleAvatar(
+        radius: 22,
+        backgroundColor: Colors.blue,
+        child: Icon(
+          leading,
+          color: Colors.white,
+        ),
+      ),
+      title: Text(
+        text,
+        style: const TextStyle(fontSize: 17, fontFamily: "Rounded Bold"),
+      ),
+      trailing: Icon(
+        trailing,
+        color: Colors.grey,
+      ),
+    );
   }
 }

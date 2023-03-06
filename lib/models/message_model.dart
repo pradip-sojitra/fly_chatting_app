@@ -10,6 +10,7 @@ class MessageModel {
     required this.time,
     required this.isSeen,
     required this.type,
+    required this.senderName,
   });
 
   String receiverId;
@@ -19,6 +20,7 @@ class MessageModel {
   Timestamp time;
   bool isSeen;
   MessageEnum type;
+  String senderName;
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
     receiverId: json["receiverId"],
@@ -28,6 +30,7 @@ class MessageModel {
     time: json["time"],
     isSeen: json["isSeen"],
     type: (json["type"] as String).toEnum(),
+    senderName: json["senderName"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -38,5 +41,6 @@ class MessageModel {
     "time": time,
     "isSeen": isSeen,
     "type": type.type,
+    "senderName":senderName,
   };
 }

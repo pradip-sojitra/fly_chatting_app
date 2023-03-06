@@ -56,16 +56,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: BuildCupertinoButton(
-                            onPressed: () async {
-                              await context
-                                  .read<ContactProvider>()
-                                  .getPhoneInvite()
-                                  .then((value) => Navigator.of(context)
-                                      .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LoginScreen()),
-                                          (route) => false));
+                            onPressed: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()),
+                                  (route) => false);
                             },
                             title: "Get Started"),
                       ),

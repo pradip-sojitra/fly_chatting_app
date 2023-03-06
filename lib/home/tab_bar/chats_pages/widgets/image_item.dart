@@ -15,7 +15,7 @@ class ImageItem extends StatelessWidget {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           child: CachedNetworkImage(
             imageUrl: messages.text,
             progressIndicatorBuilder: (context, url, downloadProgress) =>
@@ -29,7 +29,7 @@ class ImageItem extends StatelessWidget {
             borderRadius: const BorderRadius.only(topLeft: Radius.circular(12)),
             child: Container(
               padding: const EdgeInsets.only(left: 12, right: 8, top: 8),
-              color: checkData ? Colors.grey.shade300 : Colors.white,
+              color: checkData ? Colors.blue.shade100 :Colors.grey.shade300,
               child: Text(
                 DateFormat.jm().format(
                   messages.time.toDate(),
