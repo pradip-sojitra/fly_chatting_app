@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       fullPhoneNumber = '+${countryCode.toString()}${_phoneNumberController.text}';
-      verifyPhoneNumber(phoneNumber: fullPhoneNumber.toString());
+      verifyPhoneNumber(phoneNumber: fullPhoneNumber!);
     }
   }
 

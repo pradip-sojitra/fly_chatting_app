@@ -106,11 +106,11 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> selectContact(
       {required BuildContext context,
-      required UserModel receiverAllData}) async {
+      required UserModel receiverData}) async {
     try {
       final receiver = await FirebaseFirestore.instance
           .collection('users')
-          .where('phoneNumber', isEqualTo: receiverAllData.phoneNumber)
+          .where('phoneNumber', isEqualTo: receiverData.phoneNumber)
           .get();
 
       if (receiver.docs.isNotEmpty) {
@@ -118,10 +118,10 @@ class ChatProvider extends ChangeNotifier {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => MessageScreen(
-              receiverId: receiverAllData.uid,
+              receiverId: receiverData.uid,
               isGroupChat: false,
-              name: receiverAllData.fullName,
-              photo: receiverAllData.profilePicture!,
+              name: receiverData.fullName,
+              photo: receiverData.profilePicture!,
             ),
           ),
         );

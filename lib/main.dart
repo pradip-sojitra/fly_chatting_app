@@ -17,8 +17,6 @@ import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-
   await Firebase.initializeApp();
   await sharedPref.init();
   runApp(const MyApp());
@@ -72,7 +70,7 @@ class MyApp extends StatelessWidget {
                     ),
                   )
                 : ThemeData.light().copyWith(
-              scaffoldBackgroundColor: Colors.grey.shade200,
+                    scaffoldBackgroundColor: Colors.grey.shade200,
                     appBarTheme: const AppBarTheme(
                       systemOverlayStyle: SystemUiOverlayStyle(
                         statusBarColor: Colors.transparent,

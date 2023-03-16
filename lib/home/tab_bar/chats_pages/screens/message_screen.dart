@@ -4,12 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:fly_chatting_app/home/tab_bar/calls_pages/provider/calls_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/calls_pages/screens/pickup/pickup_layout.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/group_chats/widgets/message_appbar.dart';
+import 'package:fly_chatting_app/home/tab_bar/chats_pages/group_chats/provider/group_chat_provider.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/widgets/Display_text_image_video_gif.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/widgets/bottom_text_field.dart';
 import 'package:fly_chatting_app/models/message_enum.dart';
-import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:fly_chatting_app/home/tab_bar/chats_pages/provider/chat_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -35,163 +35,21 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   ScrollController scrollController = ScrollController();
 
-  String lastSeenMessage(lastSeen) {
-    final difference = DateTime.now()
-        .difference(DateTime.fromMillisecondsSinceEpoch(lastSeen));
-
-    final String finalSeen = difference.inSeconds > 59
-        ? difference.inMinutes > 59
-            ? difference.inDays > 23
-                ? "${difference.inDays} ${difference.inDays == 1 ? "day" : "days"}"
-                : "${difference.inHours} ${difference.inHours == 1 ? "hour" : "hours"}"
-            : "${difference.inMinutes} ${difference.inMinutes == 1 ? "minute" : "minutes"}"
-        : "few moments";
-
-    return finalSeen;
+  @override
+  void initState() {
+    super.initState();
+    context.read<GroupChatProvider>().selectedMessagesId.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return PickupLayoutScreen(
       scaffold: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: widget.isGroupChat
-              ? ListTile(
-                  leading: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          size: 28,
-                          color: Colors.white,
-                        ),
-                      ),
-                      CircleAvatar(
-                        radius: 22.5,
-                        backgroundColor: Colors.blueGrey.shade50,
-                        backgroundImage: NetworkImage(widget.photo),
-                      ),
-                    ],
-                  ),
-                  contentPadding: EdgeInsets.zero,
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: "Rounded Bold"),
-                      ),
-                    ],
-                  ),
-                )
-              : StreamBuilder<UserModel>(
-                  stream: context
-                      .watch<ChatProvider>()
-                      .fireUserData(widget.receiverId),
-                  builder: (context, AsyncSnapshot<UserModel> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                    }
-                    return ListTile(
-                      leading: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(
-                              Icons.arrow_back_ios,
-                              size: 28,
-                              color: Colors.white,
-                            ),
-                          ),
-                          CircleAvatar(
-                            radius: 22.5,
-                            backgroundColor: Colors.blueGrey.shade50,
-                            backgroundImage:
-                                NetworkImage(snapshot.data!.profilePicture!),
-                          ),
-                        ],
-                      ),
-                      contentPadding: EdgeInsets.zero,
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            snapshot.data!.fullName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: "Rounded Bold"),
-                          ),
-                          Text(
-                            snapshot.data!.active == true
-                                ? 'online'
-                                : "${lastSeenMessage(snapshot.data!.isSeen)} ago",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.normal,
-                                fontFamily: "Rounded Bold"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-          actions: [
-            StreamBuilder(
-                stream: context
-                    .watch<ChatProvider>()
-                    .fireUserData(widget.receiverId),
-                builder: (context, snapshot) {
-                  return IconButton(
-                    onPressed: () async {
-                      UserModel receiverData = UserModel(
-                        phoneNumber: snapshot.data!.phoneNumber,
-                        uid: snapshot.data!.uid,
-                        fullName: snapshot.data!.fullName,
-                        profilePicture: snapshot.data!.profilePicture,
-                      );
-
-                      var senderData = await context
-                          .read<ChatProvider>()
-                          .userData(
-                              uid: FirebaseAuth.instance.currentUser!.uid);
-
-                      context.read<CallProvider>().dial(
-                          sender: senderData!,
-                          receiver: receiverData,
-                          context: context);
-                    },
-                    icon: const Icon(Icons.video_call),
-                  );
-                }),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.call),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.more_vert),
-            ),
-          ],
-        ),
+        appBar: MessageAppBar(
+            photo: widget.photo,
+            name: widget.name,
+            isGroupChat: widget.isGroupChat,
+            receiverId: widget.receiverId),
         body: Column(
           children: [
             Expanded(
@@ -219,7 +77,6 @@ class _MessageScreenState extends State<MessageScreen> {
 
                   return ListView.builder(
                     controller: scrollController,
-                    shrinkWrap: true,
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       var messages = snapshot.data![index];
@@ -282,126 +139,124 @@ class _MessageScreenState extends State<MessageScreen> {
                               ),
                             ),
                           Container(
-                            alignment: isSender
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            margin: EdgeInsets.only(
-                                top: isNip ? 14 : 3,
-                                left: isSender
-                                    ? 50
-                                    : !isNip
-                                        ? 22
-                                        : 20,
-                                right: !isSender
-                                    ? 50
-                                    : !isNip
-                                        ? 22
-                                        : 20),
-                            child: CustomPaint(
-                              painter: isNip
-                                  ? CustomChatBubble(
-                                      color: isSender
-                                          ? Colors.blue.shade100
-                                          : Colors.grey.shade300,
-                                      isOwn: isSender ? true : false)
-                                  : null,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onLongPress: () async {
-                                  if (widget.isGroupChat) {
-                                    await FirebaseFirestore.instance
-                                        .collection("groups")
-                                        .doc(widget.receiverId)
-                                        .collection("chats")
-                                        .doc(messages.messageId)
-                                        .delete();
-                                  }
-                                  {
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(FirebaseAuth
-                                            .instance.currentUser?.uid)
-                                        .collection('chats')
-                                        .doc(widget.receiverId)
-                                        .collection('messages')
-                                        .doc(messages.messageId)
-                                        .delete();
-                                  }
-                                },
-                                child: Container(
-                                  padding: MessageEnum.text == messages.type
-                                      ? EdgeInsets.only(
-                                          top: 4,
-                                          bottom: 4,
-                                          left: isSender
-                                              ? 10
-                                              : isNip
-                                                  ? 10
-                                                  : 10,
-                                          right: isSender
-                                              ? isNip
-                                                  ? 10
-                                                  : 10
-                                              : 10)
-                                      : EdgeInsets.only(
-                                          top: 6,
-                                          bottom: 6,
-                                          left: isSender
-                                              ? 6
-                                              : isNip
-                                                  ? 18
-                                                  : 6,
-                                          right: isSender
-                                              ? !isNip
-                                                  ? 6
-                                                  : 18
-                                              : 6),
-                                  decoration: BoxDecoration(
-                                      color: !isNip
-                                          ? isSender
-                                              ? Colors.blue.shade100
-                                              : Colors.grey.shade300
-                                          : null,
-                                      borderRadius: !isNip
-                                          ? BorderRadius.circular(12)
-                                          : null),
-                                  child: Stack(
-                                    children: [
-                                      if (widget.isGroupChat)
-                                        if (!isSender)
-                                          if (isNip)
-                                            Text(
-                                              messages.senderName,
-                                              style: const TextStyle(
-                                                fontSize: 11.5,
-                                                fontWeight: FontWeight.w900,
-                                                fontFamily:
-                                                    "Varela Round Regular",
-                                                color: Colors.red,
+                            decoration: BoxDecoration(
+                                color: context
+                                        .watch<GroupChatProvider>()
+                                        .selectedMessagesId
+                                        .contains(messages.messageId)
+                                    ? Colors.lightGreen.shade100
+                                        .withOpacity(.60)
+                                    : null),
+                            child: Container(
+                              alignment: isSender
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              margin: EdgeInsets.only(
+                                  top: isNip ? 14 : 3,
+                                  left: isSender
+                                      ? 50
+                                      : !isNip
+                                          ? 22
+                                          : 20,
+                                  right: !isSender
+                                      ? 50
+                                      : !isNip
+                                          ? 22
+                                          : 20),
+                              child: CustomPaint(
+                                painter: isNip
+                                    ? CustomChatBubble(
+                                        color: isSender
+                                            ? Colors.blue.shade100
+                                            : Colors.grey.shade300,
+                                        isOwn: isSender ? true : false)
+                                    : null,
+                                child: InkWell(
+                                  onLongPress: () {
+                                    if (context.read<GroupChatProvider>().selectedMessagesId.isEmpty) {
+                                      context.read<GroupChatProvider>().selectMessage(messageId: messages.messageId);
+                                    }
+                                  },
+                                  onTap: () {
+                                    if (context.read<GroupChatProvider>().selectedMessagesId.isNotEmpty) {
+                                      context.read<GroupChatProvider>().selectMessage(messageId: messages.messageId);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: MessageEnum.text == messages.type
+                                        ? EdgeInsets.only(
+                                            top: 4,
+                                            bottom: 4,
+                                            left: isSender
+                                                ? 10
+                                                : isNip
+                                                    ? 10
+                                                    : 10,
+                                            right: isSender
+                                                ? isNip
+                                                    ? 10
+                                                    : 10
+                                                : 10)
+                                        : EdgeInsets.only(
+                                            top: 6,
+                                            bottom: 6,
+                                            left: isSender
+                                                ? 6
+                                                : isNip
+                                                    ? 18
+                                                    : 6,
+                                            right: isSender
+                                                ? !isNip
+                                                    ? 6
+                                                    : 18
+                                                : 6),
+                                    decoration: BoxDecoration(
+                                        color: !isNip
+                                            ? isSender
+                                                ? Colors.blue.shade100
+                                                : Colors.grey.shade300
+                                            : null,
+                                        borderRadius: !isNip
+                                            ? BorderRadius.circular(12)
+                                            : null),
+                                    child: Stack(
+                                      children: [
+                                        if (widget.isGroupChat)
+                                          if (!isSender)
+                                            if (isNip)
+                                              Text(
+                                                messages.senderName,
+                                                style: const TextStyle(
+                                                  fontSize: 11.5,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontFamily:
+                                                      "Varela Round Regular",
+                                                  color: Colors.red,
+                                                ),
                                               ),
-                                            ),
-                                      DisplayTextImageGIF(
-                                          messages: messages,
-                                          isNip: isNip,
-                                          isGroupChat: widget.isGroupChat),
-                                      const SizedBox(width: 10),
-                                      if (messages.type == MessageEnum.text)
-                                        const SizedBox(height: 6),
-                                      if (messages.type == MessageEnum.text)
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Text(
-                                            DateFormat.jm()
-                                                .format(messages.time.toDate()),
-                                            style: TextStyle(
+                                        DisplayTextImageGIF(
+                                            messages: messages,
+                                            isNip: isNip,
+                                            isGroupChat: widget.isGroupChat),
+                                        const SizedBox(width: 10),
+                                        if (messages.type == MessageEnum.text)
+                                          const SizedBox(height: 6),
+                                        if (messages.type == MessageEnum.text)
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: Text(
+                                              DateFormat.jm().format(
+                                                  messages.time.toDate()),
+                                              style: TextStyle(
                                                 fontSize: 11.5,
                                                 color: Colors.grey.shade500,
-                                                fontWeight: FontWeight.w900),
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      const SizedBox(width: 10)
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -471,22 +326,14 @@ class CustomChatBubble extends CustomPainter {
     return true;
   }
 }
-
-/*  Center(
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 10),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade50,
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: Text(
-                                    timeago.format(messages.time.toDate()),
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.grey),
-                                  ),
-                                ),
-                              ),  */
+/*       {
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser?.uid)
+                                        .collection('chats')
+                                        .doc(widget.receiverId)
+                                        .collection('messages')
+                                        .doc(messages.messageId)
+                                        .delete();
+                                  }*/

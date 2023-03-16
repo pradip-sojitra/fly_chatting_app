@@ -55,7 +55,7 @@ class _SelectContactGroupScreenState extends State<SelectContactGroupScreen> {
                 ),
                 leading: context
                         .watch<GroupChatProvider>()
-                        .selectedContactsIndex
+                        .selectedContacts
                         .contains(snapshot.data![index])
                     ? Stack(
                         children: [

@@ -356,7 +356,7 @@ class ContactChatScreen extends StatelessWidget {
       {required BuildContext context, required UserModel receiverData}) {
     context
         .read<ChatProvider>()
-        .selectContact(context: context, receiverAllData: receiverData);
+        .selectContact(context: context, receiverData: receiverData);
   }
 
   @override
@@ -407,7 +407,7 @@ class ContactChatScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              context.read<ContactProvider>().searchAlwaysChange();
+              // context.read<ContactProvider>().searchAlwaysChange();
             },
             icon: const Image(
               image: AssetImage('assets/icons/search.png'),

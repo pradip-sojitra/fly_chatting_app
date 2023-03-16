@@ -11,7 +11,7 @@ class SharedPrefs {
     return _instance;
   }
 
-  static SharedPreferences? _sharedPreferences;
+   SharedPreferences? _sharedPreferences;
 
   init() async {
     _sharedPreferences = await SharedPreferences.getInstance();

@@ -17,9 +17,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key, this.firebaseUser, this.userModel});
+  const ProfileScreen({super.key, this.userModel});
 
-  final User? firebaseUser;
   final UserModel? userModel;
 
   @override
@@ -55,13 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundImage: (profilePicture == null)
                             ? null
                             : FileImage(profilePicture!),
-                        // child: Image(
-                        // image: (profilePicture != null)? null: AssetImage("assets/icons/person_2.png"),
-                        // color: lightBlueColor,
-                        // height: 500,
                       ),
-                      // Icon(Icons.person, size: 140, color: lightBlueColor),
-                      // ),
                       Positioned(
                         bottom: -7,
                         right: -7,
@@ -229,7 +222,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .doc(widget.userModel!.uid)
         .set(widget.userModel!.toJson())
         .then((value) {
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen(),), (route) => false);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+          (route) => false);
     });
   }
 }

@@ -34,7 +34,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           );
     }
     Navigator.pop(context);
-    context.read<GroupChatProvider>().selectedContactsIndex.clear();
+    context.read<GroupChatProvider>().selectedContacts.clear();
   }
 
   @override

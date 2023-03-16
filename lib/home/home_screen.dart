@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-
     context.read<ThemeProvider>().getLocal();
     WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
@@ -97,13 +96,12 @@ class _HomeScreenState extends State<HomeScreen>
                   icon: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 450),
                     child: provider.isChangeTheme
-                        ? const Image(
-                            image: AssetImage('assets/icons/moon.png'),
-                            color: Colors.white,
-                            height: 25,
-                          )
+                        ? const Icon(
+                      Icons.dark_mode_rounded,
+                      size: 24,
+                    )
                         : const Icon(
-                            Icons.sunny,
+                            Icons.light_mode_rounded,
                             size: 24,
                           ),
                   ),

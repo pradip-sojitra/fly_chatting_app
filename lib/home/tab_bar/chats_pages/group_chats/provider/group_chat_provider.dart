@@ -5,20 +5,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:fly_chatting_app/common/utils.dart';
 import 'package:fly_chatting_app/common/widgets/messenger_scaffold.dart';
 import 'package:fly_chatting_app/models/group_model.dart';
+import 'package:fly_chatting_app/models/message_model.dart';
 import 'package:fly_chatting_app/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 class GroupChatProvider extends ChangeNotifier {
   final FirebaseFirestore fireStore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
-  List<UserModel?> selectedContactsIndex = [];
+  List<UserModel?> selectedContacts = [];
+  List<String> selectedMessagesId = [];
 
   void selectContact({required UserModel? userData}) {
-    if (selectedContactsIndex.contains(userData)) {
-      selectedContactsIndex.remove(userData);
+    if (selectedContacts.contains(userData)) {
+      selectedContacts.remove(userData);
     } else {
-      selectedContactsIndex.add(userData);
+      selectedContacts.add(userData);
     }
+    notifyListeners();
+  }
+
+  void selectMessage({required String messageId}) {
+    if (selectedMessagesId.contains(messageId)) {
+      selectedMessagesId.remove(messageId);
+    } else {
+      selectedMessagesId.add(messageId);
+    }
+    notifyListeners();
+    print("--------------- -------------- $selectedMessagesId ---------------- -----------------");
+  }
+
+  void selectMessageClear(){
+    selectedMessagesId.clear();
     notifyListeners();
   }
 
@@ -31,7 +48,7 @@ class GroupChatProvider extends ChangeNotifier {
       final String groupId = const Uuid().v1();
       final DateTime time = DateTime.now();
       List<String> selectedUid = [];
-      for (var contact in selectedContactsIndex) {
+      for (var contact in selectedContacts) {
         selectedUid.add(contact!.uid);
       }
 

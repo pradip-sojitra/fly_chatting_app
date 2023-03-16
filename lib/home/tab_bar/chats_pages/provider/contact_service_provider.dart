@@ -109,6 +109,7 @@ class ContactProvider with ChangeNotifier {
                     .replaceAll('+91', '') ==
                 firebaseContact.phoneNumber) {
               firebaseContacts.add(firebaseContact);
+              // firebaseContacts.removeWhere((element) => element!.uid == auth.currentUser!.uid);
             }
           }
         }
